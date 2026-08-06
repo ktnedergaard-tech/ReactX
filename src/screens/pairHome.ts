@@ -2,6 +2,9 @@ import type { Nav } from '../app';
 import { pairSession } from '../pairSession';
 import { loadServerUrl } from '../storage';
 import { unlockAudio } from '../cues';
+import { DEFAULT_RELAY_URL } from '../config';
+
+const HAS_BUILT_IN_SERVER = DEFAULT_RELAY_URL.trim().length > 0;
 
 export function renderPairHome(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
@@ -30,9 +33,6 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   const card = document.createElement('div');
   card.className = 'card';
 
-  const urlField = document.createElement('div');
-  urlField.className = 'field';
-  urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
   const urlInput = document.createElement('input');
   urlInput.type = 'text';
   urlInput.placeholder = 'wss://dit-reactx-relay.example.com';
@@ -40,16 +40,49 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   urlInput.autocapitalize = 'off';
   urlInput.autocomplete = 'off';
   urlInput.spellcheck = false;
-  urlField.appendChild(urlInput);
-  card.appendChild(urlField);
 
-  const hint = document.createElement('p');
-  hint.style.fontSize = '0.75rem';
-  hint.style.color = 'var(--text-dim)';
-  hint.style.margin = '-6px 0 14px';
-  hint.textContent =
-    'Alle 3 telefoner skal bruge samme server-adresse. Se README for hvordan I selv sætter en gratis relay-server op (eller kører den lokalt på samme wifi til stævner/træning uden internet).';
-  card.appendChild(hint);
+  if (HAS_BUILT_IN_SERVER) {
+    // Der er en indbygget server – de fleste skal aldrig se eller røre feltet.
+    const details = document.createElement('details');
+    details.style.marginBottom = '14px';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Avanceret: brug egen server-adresse';
+    summary.style.fontSize = '0.78rem';
+    summary.style.color = 'var(--text-dim)';
+    summary.style.cursor = 'pointer';
+    details.appendChild(summary);
+
+    const urlField = document.createElement('div');
+    urlField.className = 'field';
+    urlField.style.marginTop = '10px';
+    urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
+    urlField.appendChild(urlInput);
+    details.appendChild(urlField);
+
+    const hint = document.createElement('p');
+    hint.style.fontSize = '0.75rem';
+    hint.style.color = 'var(--text-dim)';
+    hint.style.margin = '4px 0 0';
+    hint.textContent =
+      'Kun nødvendigt hvis I selv kører en server lokalt (fx til en bane uden god mobildækning) – se README.';
+    details.appendChild(hint);
+
+    card.appendChild(details);
+  } else {
+    const urlField = document.createElement('div');
+    urlField.className = 'field';
+    urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
+    urlField.appendChild(urlInput);
+    card.appendChild(urlField);
+
+    const hint = document.createElement('p');
+    hint.style.fontSize = '0.75rem';
+    hint.style.color = 'var(--text-dim)';
+    hint.style.margin = '-6px 0 14px';
+    hint.textContent =
+      'Alle 3 telefoner skal bruge samme server-adresse. Se README for hvordan I selv sætter en gratis relay-server op (eller kører den lokalt på samme wifi til stævner/træning uden internet).';
+    card.appendChild(hint);
+  }
 
   const errorBanner = document.createElement('div');
   errorBanner.className = 'error-banner';

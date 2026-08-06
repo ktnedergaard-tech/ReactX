@@ -1,4 +1,5 @@
 import type { ColorId } from './colors';
+import { DEFAULT_RELAY_URL } from './config';
 
 export interface DrillSettings {
   minIntervalMs: number;
@@ -46,7 +47,7 @@ export function saveSettings(settings: DrillSettings): void {
 }
 
 export function loadServerUrl(): string {
-  return localStorage.getItem(SERVER_URL_KEY) ?? '';
+  return localStorage.getItem(SERVER_URL_KEY) ?? DEFAULT_RELAY_URL;
 }
 
 export function saveServerUrl(url: string): void {

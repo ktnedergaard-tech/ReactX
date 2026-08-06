@@ -53,22 +53,33 @@ indstillinger og selve farve-timeren. Timeren kører **på serveren**, ikke på
 telefonerne – det er det, der sikrer at alle 3 telefoner skifter farve på
 præcis samme tidspunkt, uanset forskelle i telefonernes egen klokke/ydelse.
 
-```bash
-cd server
-npm install
-npm start            # lytter på port 8080 (eller $PORT)
-```
+Netlify (eller GitHub Pages/Vercel) kan **kun** hoste selve appen – de kører
+ikke en vedvarende baggrundsproces, som en WebSocket-server kræver. Serveren
+skal derfor køre et andet sted. Det er et **engangs-setup for coachen**, ikke
+noget spillerne skal tænke på.
 
-Server-adressen skal telefonerne selv skrive ind under "Par sammen" (den
-huskes i browseren bagefter), fx `wss://dit-reactx-relay.example.com`.
+### Ét-klik opsætning (anbefalet)
 
-**Muligheder for at køre serveren:**
+Repoet indeholder en `render.yaml`, så [Render](https://render.com) kan
+oprette serveren automatisk:
 
-1. **Gratis cloud-hosting** (anbefalet til faste træningshold): fx
-   [Render](https://render.com) – opret en "Web Service", peg på `/server`,
-   build-kommando `npm install`, start-kommando `npm start`. Du får en
-   `https://…onrender.com`-adresse; brug `wss://` i stedet for `https://` i
-   appen.
+**[→ Deploy relay-serveren til Render](https://render.com/deploy?repo=https://github.com/ktnedergaard-tech/ReactX)**
+
+1. Klik linket, log ind med GitHub (samme konto som repoet), klik "Apply"/"Deploy".
+2. Vent ca. 1 minut mens Render bygger og starter serveren (gratis plan).
+3. Kopiér adressen Render giver dig, fx `https://reactx-relay.onrender.com`.
+4. Sæt den ind i `src/config.ts` (`DEFAULT_RELAY_URL`) og push – herefter er
+   server-adressen bagt ind i appen, og "Par sammen" virker med det samme
+   for alle, uden at nogen skal indtaste noget.
+
+Bemærk: Renders gratis plan går i dvale efter inaktivitet og bruger nogle
+sekunder på at vågne ved første forbindelse – helt fint til træning, men
+værd at vide hvis den første "Opret rum" virker langsomt.
+
+**Andre muligheder for at køre serveren:**
+
+1. **Anden cloud-hosting**: Fly.io, Railway m.fl. virker også – peg blot på
+   `/server`, build-kommando `npm install`, start-kommando `npm start`.
 2. **Lokalt på en bærbar til banen**: hvis banen ikke har god
    mobildækning, kan I køre serveren på en bærbar der laver wifi-hotspot
    (eller er på samme wifi som telefonerne). Telefonerne peger så på

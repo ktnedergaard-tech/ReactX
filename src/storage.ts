@@ -10,6 +10,8 @@ export interface DrillSettings {
   vibrationCue: boolean;
   showRepCounter: boolean;
   colorBlindLabels: boolean;
+  /** Viser et tal (1-9) oveni farven, så spilleren skal sige både farve og tal. */
+  showNumbers: boolean;
 }
 
 export const DEFAULT_SETTINGS: DrillSettings = {
@@ -22,6 +24,7 @@ export const DEFAULT_SETTINGS: DrillSettings = {
   vibrationCue: false,
   showRepCounter: true,
   colorBlindLabels: false,
+  showNumbers: false,
 };
 
 const SETTINGS_KEY = 'reactx.settings.v1';

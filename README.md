@@ -110,7 +110,10 @@ serveren genstartes.
 - Flere farver (orange/lilla/hvid/sort) når basisfarverne er for nemme.
 - "Distraktor": en telefon går sort ind imellem – spilleren skal sige
   "ingen"/"sort".
-- Tal/bogstaver oven i farven for ekstra kognitiv belastning.
+- ✅ Tal oven i farven (slås til under "Vis tal oveni farven") for ekstra
+  kognitiv belastning – i Pair-tilstand er både farve og tal garanteret
+  forskellige på tværs af telefonerne.
+- Bogstaver i stedet for/oven i tal, til endnu en variant.
 
 **Træningsvarianter**
 - Peripert syn: farven vises kun kort (fx 300 ms) og går sort igen.

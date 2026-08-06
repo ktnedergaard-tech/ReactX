@@ -83,7 +83,7 @@ export function renderSoloRun(root: HTMLElement, nav: Nav): () => void {
 
   const drill = new SoloDrill(settings, {
     onCountdown: (n) => view.showCountdown(n),
-    onColor: (color, repIndex) => view.setColor(color, repIndex),
+    onColor: (color, repIndex, number) => view.setColor(color, repIndex, number),
     onPhase: () => {
       /* no-op, UI reagerer via onColor/onCountdown */
     },

@@ -22,6 +22,7 @@ export interface ColorScreenOptions {
 export class ColorScreenView {
   private root: HTMLDivElement;
   private label: HTMLDivElement;
+  private numberLabel: HTMLDivElement;
   private hud: HTMLDivElement;
   private repCounterEl: HTMLDivElement;
   private overlay: HTMLDivElement | null = null;
@@ -37,9 +38,18 @@ export class ColorScreenView {
     this.hud.textContent = opts.statusText ?? '';
     this.root.appendChild(this.hud);
 
+    const textStack = document.createElement('div');
+    textStack.className = 'text-stack';
+
     this.label = document.createElement('div');
     this.label.className = 'label';
-    this.root.appendChild(this.label);
+    textStack.appendChild(this.label);
+
+    this.numberLabel = document.createElement('div');
+    this.numberLabel.className = 'number-label';
+    textStack.appendChild(this.numberLabel);
+
+    this.root.appendChild(textStack);
 
     this.repCounterEl = document.createElement('div');
     this.repCounterEl.className = 'rep-counter';
@@ -70,11 +80,13 @@ export class ColorScreenView {
     this.hud.textContent = text;
   }
 
-  setColor(color: ColorId, repIndex?: number): void {
+  setColor(color: ColorId, repIndex?: number, displayNumber?: number): void {
     const def = colorById(color);
     this.root.style.backgroundColor = def.hex;
     this.label.style.color = def.contrast;
     this.label.textContent = this.opts.colorBlindLabels ? def.label : '';
+    this.numberLabel.style.color = def.contrast;
+    this.numberLabel.textContent = displayNumber !== undefined ? String(displayNumber) : '';
     if (this.opts.showRepCounter && repIndex !== undefined) {
       this.repCounterEl.textContent = `#${repIndex}`;
     }
@@ -85,6 +97,7 @@ export class ColorScreenView {
   showCountdown(secondsLeft: number): void {
     this.label.style.color = '#ffffff';
     this.label.textContent = secondsLeft > 0 ? String(secondsLeft) : 'KLAR!';
+    this.numberLabel.textContent = '';
   }
 
   private toggleOverlay(): void {

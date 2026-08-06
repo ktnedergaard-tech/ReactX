@@ -29,5 +29,5 @@ export type ServerMessage =
   | { type: 'settings'; settings: DrillSettings }
   | { type: 'status'; status: RoomStatus }
   | { type: 'countdown'; secondsLeft: number }
-  | { type: 'color'; color: ColorId; repIndex: number }
+  | { type: 'color'; color: ColorId; repIndex: number; number?: number }
   | { type: 'pong' };

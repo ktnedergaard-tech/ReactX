@@ -39,19 +39,20 @@ export function pickRandom<T>(arr: T[]): T {
 }
 
 /**
- * "Pose-shuffle": hver farve i paletten optræder præcis én gang pr. omgang
+ * "Pose-shuffle": hvert element i listen optræder præcis én gang pr. omgang
  * gennem posen, i ny tilfældig rækkefølge, før posen blandes igen. Det
  * sikrer at rækkefølgen aldrig er den samme fra træning til træning, at
- * ingen farve kommer sjældnere end de andre, og at man aldrig får den
- * samme farve to gange i træk – heller ikke hen over posens grænse.
- * Bruges når "Undgå samme farve to gange i træk" er slået til.
+ * intet element kommer sjældnere end de andre, og at man aldrig får det
+ * samme element to gange i træk – heller ikke hen over posens grænse.
+ * Bruges til både farver ("Undgå samme farve to gange i træk") og de
+ * valgfrie tal oveni farven.
  */
-export function createColorSequencer(palette: ColorId[]): () => ColorId {
-  let bag: ColorId[] = [];
-  let last: ColorId | null = null;
+export function createSequencer<T>(items: T[]): () => T {
+  let bag: T[] = [];
+  let last: T | null = null;
 
   function refill(): void {
-    bag = [...palette];
+    bag = [...items];
     for (let i = bag.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [bag[i], bag[j]] = [bag[j], bag[i]];
@@ -61,10 +62,13 @@ export function createColorSequencer(palette: ColorId[]): () => ColorId {
     }
   }
 
-  return function next(): ColorId {
-    if (palette.length === 0) throw new Error('Tom palet');
+  return function next(): T {
+    if (items.length === 0) throw new Error('Tom liste');
     if (bag.length === 0) refill();
-    last = bag.pop() as ColorId;
+    last = bag.pop() as T;
     return last;
   };
 }
+
+/** Tal-puljen der bruges når "Vis tal oveni farven" er slået til. */
+export const NUMBER_POOL: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];

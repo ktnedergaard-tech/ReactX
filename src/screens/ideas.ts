@@ -32,7 +32,8 @@ export function renderIdeas(root: HTMLElement, nav: Nav): void {
       <li>Progressivt tempo: intervallet bliver automatisk kortere hen gennem øvelsen/serien.</li>
       <li>Flere farver (orange, lilla, hvid, sort) når basis-farverne bliver for nemme.</li>
       <li>"Distraktor": en telefon går sort ind imellem – spilleren skal sige "ingen"/"sort" i stedet.</li>
-      <li>Tal eller bogstaver oven i farven, så spilleren både skal se farve og læse/tælle (kobler kognitiv belastning på).</li>
+      <li>✅ Tal oveni farven (slå "Vis tal oveni farven" til i indstillingerne) – spilleren skal både se farve og læse/sige tal.</li>
+      <li>Bogstaver i stedet for tal, til endnu en variant.</li>
     </ul>
     <h3>Træningsvarianter</h3>
     <ul>

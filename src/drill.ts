@@ -1,12 +1,13 @@
 import type { ColorId } from './colors';
-import { createColorSequencer } from './colors';
+import { createSequencer, NUMBER_POOL } from './colors';
 import type { DrillSettings } from './storage';
 
 export type DrillPhase = 'idle' | 'countdown' | 'running' | 'paused' | 'stopped';
 
 export interface DrillCallbacks {
   onCountdown: (secondsLeft: number) => void;
-  onColor: (color: ColorId, repIndex: number) => void;
+  /** number er kun sat når "Vis tal oveni farven" er slået til. */
+  onColor: (color: ColorId, repIndex: number, number?: number) => void;
   onPhase: (phase: DrillPhase) => void;
 }
 
@@ -20,15 +21,17 @@ export class SoloDrill {
   private timer: number | undefined;
   private countdownTimer: number | undefined;
   private repIndex = 0;
-  private nextSequenced: (() => ColorId) | null = null;
+  private nextColor: (() => ColorId) | null = null;
+  private nextNumber: (() => number) | null = null;
 
   constructor(private settings: DrillSettings, private cb: DrillCallbacks) {}
 
   start(): void {
     this.repIndex = 0;
     // Ny pose-shuffle for hver træning, så rækkefølgen aldrig er den samme
-    // to gange, og alle farver kommer lige ofte.
-    this.nextSequenced = this.settings.avoidImmediateRepeat ? createColorSequencer(this.settings.palette) : null;
+    // to gange, og alle farver (og evt. tal) kommer lige ofte.
+    this.nextColor = this.settings.avoidImmediateRepeat ? createSequencer(this.settings.palette) : null;
+    this.nextNumber = this.settings.showNumbers ? createSequencer(NUMBER_POOL) : null;
     let n = this.settings.countdownSeconds;
     if (n <= 0) {
       this.beginRunning();
@@ -54,9 +57,10 @@ export class SoloDrill {
 
   private tick(): void {
     const palette = this.settings.palette;
-    const color = this.nextSequenced ? this.nextSequenced() : palette[Math.floor(Math.random() * palette.length)];
+    const color = this.nextColor ? this.nextColor() : palette[Math.floor(Math.random() * palette.length)];
+    const number = this.nextNumber ? this.nextNumber() : undefined;
     this.repIndex += 1;
-    this.cb.onColor(color, this.repIndex);
+    this.cb.onColor(color, this.repIndex, number);
 
     const { minIntervalMs, maxIntervalMs } = this.settings;
     const delay = minIntervalMs + Math.random() * Math.max(0, maxIntervalMs - minIntervalMs);

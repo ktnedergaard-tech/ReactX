@@ -30,7 +30,7 @@ export function renderPairRun(root: HTMLElement, nav: Nav): () => void {
 
   setWakeLockWanted(true);
 
-  const unsubColor = pairSession.onColor((color, repIndex) => view.setColor(color, repIndex));
+  const unsubColor = pairSession.onColor((color, repIndex, number) => view.setColor(color, repIndex, number));
   const unsubCountdown = pairSession.onCountdown((n) => view.showCountdown(n));
   const unsubState = pairSession.onState((s) => {
     if (s.connState === 'reconnecting') view.setStatusText('GENOPRETTER FORBINDELSE…');

@@ -32,7 +32,10 @@ const DEFAULT_SETTINGS = {
   vibrationCue: false,
   showRepCounter: true,
   colorBlindLabels: false,
+  showNumbers: false,
 };
+
+const NUMBER_POOL = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 /** @type {Map<string, Room>} */
 const rooms = new Map();
@@ -58,12 +61,17 @@ function shuffle(arr) {
   return a;
 }
 
-function pickDistinctColors(palette, n) {
-  if (palette.length === 0) return [];
-  if (palette.length >= n) {
-    return shuffle(palette).slice(0, n);
+/**
+ * Vælg N forskellige værdier fra en pulje (bruges til både farver og tal),
+ * så ingen af de tilsluttede telefoner viser det samme samtidig. Falder
+ * tilbage til tilfældig (med mulige gentagelser) hvis puljen er mindre end N.
+ */
+function pickDistinct(pool, n) {
+  if (pool.length === 0) return [];
+  if (pool.length >= n) {
+    return shuffle(pool).slice(0, n);
   }
-  return Array.from({ length: n }, () => palette[Math.floor(Math.random() * palette.length)]);
+  return Array.from({ length: n }, () => pool[Math.floor(Math.random() * pool.length)]);
 }
 
 class Room {
@@ -158,10 +166,14 @@ class Room {
   tick() {
     const slots = this.connectedSlots();
     if (slots.length === 0) return;
-    const colors = pickDistinctColors(this.settings.palette, slots.length);
+    // Farver OG tal vælges hver især som distinkte værdier på tværs af de
+    // tilsluttede telefoner, så ingen to telefoner nogensinde viser samme
+    // farve eller samme tal samtidig.
+    const colors = pickDistinct(this.settings.palette, slots.length);
+    const numbers = this.settings.showNumbers ? pickDistinct(NUMBER_POOL, slots.length) : null;
     this.repIndex += 1;
     slots.forEach((slot, i) => {
-      this.sendTo(slot, { type: 'color', color: colors[i], repIndex: this.repIndex });
+      this.sendTo(slot, { type: 'color', color: colors[i], repIndex: this.repIndex, number: numbers ? numbers[i] : undefined });
     });
 
     const { minIntervalMs, maxIntervalMs } = this.settings;

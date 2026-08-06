@@ -17,7 +17,7 @@ export interface PairState {
 }
 
 type StateListener = (s: PairState) => void;
-type ColorListener = (color: ColorId, repIndex: number) => void;
+type ColorListener = (color: ColorId, repIndex: number, number?: number) => void;
 type CountdownListener = (secondsLeft: number) => void;
 
 /**
@@ -104,7 +104,7 @@ class PairSession {
           for (const l of this.countdownListeners) l(msg.secondsLeft);
           break;
         case 'color':
-          for (const l of this.colorListeners) l(msg.color, msg.repIndex);
+          for (const l of this.colorListeners) l(msg.color, msg.repIndex, msg.number);
           break;
         case 'error':
           this.patch({ error: msg.message });

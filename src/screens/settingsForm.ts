@@ -109,6 +109,12 @@ export function buildSettingsForm(
     })
   );
   toggles.appendChild(
+    switchRow('Vis tal oveni farven (sig farve + tal)', settings.showNumbers, (v) => {
+      settings.showNumbers = v;
+      onChange(settings);
+    })
+  );
+  toggles.appendChild(
     switchRow('Lydsignal ved skift', settings.soundCue, (v) => {
       settings.soundCue = v;
       onChange(settings);

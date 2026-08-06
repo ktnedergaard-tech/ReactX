@@ -38,29 +38,33 @@ export function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/** Vælg en ny farve der ikke er lig den forrige (hvis der er flere end 1 mulighed). */
-export function pickNext(palette: ColorId[], previous: ColorId | null): ColorId {
-  if (palette.length === 0) throw new Error('Tom palet');
-  if (palette.length === 1) return palette[0];
-  let next = pickRandom(palette);
-  let guard = 0;
-  while (next === previous && guard < 20) {
-    next = pickRandom(palette);
-    guard++;
-  }
-  return next;
-}
-
 /**
- * Vælg N distinkte farver fra paletten (én pr. tilsluttet telefon), så to
- * telefoner ikke viser samme farve samtidig. Falder tilbage til tilfældig
- * (med mulige gentagelser) hvis paletten er mindre end N.
+ * "Pose-shuffle": hver farve i paletten optræder præcis én gang pr. omgang
+ * gennem posen, i ny tilfældig rækkefølge, før posen blandes igen. Det
+ * sikrer at rækkefølgen aldrig er den samme fra træning til træning, at
+ * ingen farve kommer sjældnere end de andre, og at man aldrig får den
+ * samme farve to gange i træk – heller ikke hen over posens grænse.
+ * Bruges når "Undgå samme farve to gange i træk" er slået til.
  */
-export function pickDistinct(palette: ColorId[], n: number): ColorId[] {
-  if (palette.length >= n) {
-    const shuffled = [...palette].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, n);
+export function createColorSequencer(palette: ColorId[]): () => ColorId {
+  let bag: ColorId[] = [];
+  let last: ColorId | null = null;
+
+  function refill(): void {
+    bag = [...palette];
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [bag[i], bag[j]] = [bag[j], bag[i]];
+    }
+    if (bag.length > 1 && bag[0] === last) {
+      [bag[0], bag[1]] = [bag[1], bag[0]];
+    }
   }
-  // For få farver til at dække alle telefoner uden gentagelse.
-  return Array.from({ length: n }, () => pickRandom(palette));
+
+  return function next(): ColorId {
+    if (palette.length === 0) throw new Error('Tom palet');
+    if (bag.length === 0) refill();
+    last = bag.pop() as ColorId;
+    return last;
+  };
 }

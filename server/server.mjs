@@ -49,11 +49,19 @@ function genId() {
   return randomBytes(8).toString('hex');
 }
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function pickDistinctColors(palette, n) {
   if (palette.length === 0) return [];
   if (palette.length >= n) {
-    const shuffled = [...palette].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, n);
+    return shuffle(palette).slice(0, n);
   }
   return Array.from({ length: n }, () => palette[Math.floor(Math.random() * palette.length)]);
 }

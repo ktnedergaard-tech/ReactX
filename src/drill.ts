@@ -1,5 +1,5 @@
 import type { ColorId } from './colors';
-import { pickNext } from './colors';
+import { createColorSequencer } from './colors';
 import type { DrillSettings } from './storage';
 
 export type DrillPhase = 'idle' | 'countdown' | 'running' | 'paused' | 'stopped';
@@ -20,13 +20,15 @@ export class SoloDrill {
   private timer: number | undefined;
   private countdownTimer: number | undefined;
   private repIndex = 0;
-  private lastColor: ColorId | null = null;
+  private nextSequenced: (() => ColorId) | null = null;
 
   constructor(private settings: DrillSettings, private cb: DrillCallbacks) {}
 
   start(): void {
     this.repIndex = 0;
-    this.lastColor = null;
+    // Ny pose-shuffle for hver træning, så rækkefølgen aldrig er den samme
+    // to gange, og alle farver kommer lige ofte.
+    this.nextSequenced = this.settings.avoidImmediateRepeat ? createColorSequencer(this.settings.palette) : null;
     let n = this.settings.countdownSeconds;
     if (n <= 0) {
       this.beginRunning();
@@ -52,10 +54,7 @@ export class SoloDrill {
 
   private tick(): void {
     const palette = this.settings.palette;
-    const color = this.settings.avoidImmediateRepeat
-      ? pickNext(palette, this.lastColor)
-      : palette[Math.floor(Math.random() * palette.length)];
-    this.lastColor = color;
+    const color = this.nextSequenced ? this.nextSequenced() : palette[Math.floor(Math.random() * palette.length)];
     this.repIndex += 1;
     this.cb.onColor(color, this.repIndex);
 

@@ -47,11 +47,23 @@ export class ColorScreenView {
 
     const cornerTap = document.createElement('button');
     cornerTap.className = 'corner-tap';
-    cornerTap.setAttribute('aria-label', 'Menu');
+    cornerTap.setAttribute('aria-label', 'Pause og stop');
+    cornerTap.innerHTML = '<span class="menu-dot">⋯</span>';
     cornerTap.addEventListener('click', () => this.toggleOverlay());
     this.root.appendChild(cornerTap);
 
     mount.appendChild(this.root);
+    this.showHintOnce();
+  }
+
+  /** Viser kort en tip-boble om menu-knappen, så den er let at finde første gang. */
+  private showHintOnce(): void {
+    const hint = document.createElement('div');
+    hint.className = 'corner-hint';
+    hint.textContent = 'Tryk her for pause/stop';
+    this.root.appendChild(hint);
+    window.setTimeout(() => hint.classList.add('corner-hint--fade'), 3500);
+    window.setTimeout(() => hint.remove(), 4200);
   }
 
   setStatusText(text: string): void {
@@ -104,7 +116,7 @@ export class ColorScreenView {
 
     const exitBtn = document.createElement('button');
     exitBtn.className = 'btn btn--danger';
-    exitBtn.textContent = 'Afslut';
+    exitBtn.textContent = '⏹ Stop træning';
     exitBtn.addEventListener('click', () => this.opts.onExit());
     overlay.appendChild(exitBtn);
 

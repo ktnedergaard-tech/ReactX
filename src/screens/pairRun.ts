@@ -1,0 +1,51 @@
+import type { Nav } from '../app';
+import { pairSession } from '../pairSession';
+import { ColorScreenView } from '../colorScreen';
+import { setWakeLockWanted } from '../wakelock';
+
+export function renderPairRun(root: HTMLElement, nav: Nav): () => void {
+  root.innerHTML = '';
+  const state = pairSession.getState();
+  let paused = false;
+
+  const view = new ColorScreenView(root, {
+    showRepCounter: state.settings.showRepCounter,
+    colorBlindLabels: state.settings.colorBlindLabels,
+    soundCue: state.settings.soundCue,
+    vibrationCue: state.settings.vibrationCue,
+    controllable: state.isHost,
+    statusText: state.isHost ? 'VÆRT' : '',
+    onExit: () => {
+      if (state.isHost) pairSession.stop();
+      pairSession.leave();
+      setWakeLockWanted(false);
+      nav.go('home');
+    },
+    onTogglePause: () => {
+      paused = !paused;
+      if (paused) pairSession.pause();
+      else pairSession.resume();
+    },
+  });
+
+  setWakeLockWanted(true);
+
+  const unsubColor = pairSession.onColor((color, repIndex) => view.setColor(color, repIndex));
+  const unsubCountdown = pairSession.onCountdown((n) => view.showCountdown(n));
+  const unsubState = pairSession.onState((s) => {
+    if (s.connState === 'reconnecting') view.setStatusText('GENOPRETTER FORBINDELSE…');
+    else if (s.connState === 'open') view.setStatusText(s.isHost ? 'VÆRT' : '');
+    if (s.status === 'stopped') {
+      setWakeLockWanted(false);
+      nav.go('pair-lobby');
+    }
+  });
+
+  return () => {
+    unsubColor();
+    unsubCountdown();
+    unsubState();
+    setWakeLockWanted(false);
+    view.destroy();
+  };
+}

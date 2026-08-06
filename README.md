@@ -1,1 +1,149 @@
 # ReactX
+
+Fuldskærms farve-reaktionstræning til iPhone (webapp / PWA). Skærmen skifter
+mellem **blå, gul, rød og grøn** (+ flere valgfrie farver) med tilfældige
+mellemrum. Bygget til øvelser som:
+
+> Spilleren står med ryggen til telefonen og spiller bolden op af en
+> rebounder. Mens bolden er på vej tilbage, skal spilleren nå at scanne
+> området, se farven/farverne på telefonen(erne) og råbe dem højt – inden
+> bolden modtages. Farverne skifter for hver scanning.
+
+Der er to tilstande:
+
+- **Solo** – én telefon, kører 100 % offline, ingen opsætning.
+- **Par sammen** – 2-3 telefoner synkroniseres via en lille relay-server, så
+  ingen af de tilsluttede telefoner nogensinde viser samme farve samtidig.
+  Spilleren skal derfor identificere op til 3 forskellige farver på én gang.
+
+Prøv appen live på telefonen ved at åbne den i Safari og vælge **Del → Føj
+til hjemmeskærm** – så åbner den som en rigtig app uden browser-linje.
+
+---
+
+## Kom i gang (udvikling)
+
+```bash
+npm install
+npm run dev        # åbn på din computer
+```
+
+For at teste på selve iPhone'en mens du udvikler: sørg for at telefonen og
+computeren er på samme wifi, kør `npm run dev` (den lytter på alle netværk),
+og åbn `http://<din-computers-lokale-ip>:5173` i Safari på telefonen.
+
+```bash
+npm run build       # bygger til /dist – klar til hosting som statisk site
+npm run preview      # server /dist lokalt, til slut-test før deploy
+npm run gen-icons    # genererer app-ikonerne i public/icons (kør kun hvis du ændrer scripts/generate-icons.mjs)
+```
+
+## Deploy af selve appen (frontend)
+
+`/dist` er et rent statisk website og kan hostes hvor som helst – nemmest er
+[Vercel](https://vercel.com), [Netlify](https://netlify.com) eller GitHub
+Pages. Peg blot build-kommandoen på `npm run build` og output-mappen på
+`dist`.
+
+## Parrings-server (til "Par sammen"-tilstand)
+
+Filen `/server/server.mjs` er en lille, selvstændig Node.js
+WebSocket-server (kun afhængig af pakken `ws`), som holder styr på rum,
+indstillinger og selve farve-timeren. Timeren kører **på serveren**, ikke på
+telefonerne – det er det, der sikrer at alle 3 telefoner skifter farve på
+præcis samme tidspunkt, uanset forskelle i telefonernes egen klokke/ydelse.
+
+```bash
+cd server
+npm install
+npm start            # lytter på port 8080 (eller $PORT)
+```
+
+Server-adressen skal telefonerne selv skrive ind under "Par sammen" (den
+huskes i browseren bagefter), fx `wss://dit-reactx-relay.example.com`.
+
+**Muligheder for at køre serveren:**
+
+1. **Gratis cloud-hosting** (anbefalet til faste træningshold): fx
+   [Render](https://render.com) – opret en "Web Service", peg på `/server`,
+   build-kommando `npm install`, start-kommando `npm start`. Du får en
+   `https://…onrender.com`-adresse; brug `wss://` i stedet for `https://` i
+   appen.
+2. **Lokalt på en bærbar til banen**: hvis banen ikke har god
+   mobildækning, kan I køre serveren på en bærbar der laver wifi-hotspot
+   (eller er på samme wifi som telefonerne). Telefonerne peger så på
+   `ws://<den-bærbares-lokale-ip>:8080` – ingen internetforbindelse
+   nødvendig undervejs.
+
+Serveren er bevidst holdt simpel (rum gemmes i hukommelsen, ingen database) –
+fuldt tilstrækkeligt til en træningssession, men rum forsvinder hvis
+serveren genstartes.
+
+---
+
+## Sådan bruges appen til øvelsen
+
+1. **Solo**: Vælg *Solo*, indstil tempo/farver, tryk *Start*. Placér
+   telefonen et sted spilleren kan scanne uden at kigge direkte på den hele
+   tiden.
+2. **Par sammen**: Én telefon opretter et rum og bliver "vært" (får en
+   4-tegns kode). De to andre telefoner vælger *Deltag i rum* og indtaster
+   koden. Værten sætter tempo/farver og trykker *Start* – så starter alle 3
+   telefoner samtidig og viser hele tiden **forskellige** farver.
+3. Placér telefonerne rundt om spilleren (fx bag, til venstre, til højre)
+   på stativer eller lænet op ad noget i den højde, spilleren naturligt vil
+   dreje hovedet mod.
+4. Skru skærmens lysstyrke helt op, og skru "Sluk skærm automatisk" af i
+   iPhone-indstillinger, hvis appen ikke selv kan holde skærmen tændt
+   (kræver iOS 16.4+ for automatisk "wake lock").
+5. Tryk i øverste højre hjørne af farveskærmen for at åbne pause/afslut-menuen
+   uden at røre resten af skærmen (så en fejlramt bold ikke rammer en knap).
+
+---
+
+## Idéer & forbedringer
+
+*(Findes også inde i appen under "Idéer til øvelser og forbedringer".)*
+
+**Sværhedsgrad**
+- Progressivt tempo: intervallet bliver kortere hen gennem serien.
+- Flere farver (orange/lilla/hvid/sort) når basisfarverne er for nemme.
+- "Distraktor": en telefon går sort ind imellem – spilleren skal sige
+  "ingen"/"sort".
+- Tal/bogstaver oven i farven for ekstra kognitiv belastning.
+
+**Træningsvarianter**
+- Peripert syn: farven vises kun kort (fx 300 ms) og går sort igen.
+- "Kald og bekræft": coach godkender manuelt før næste skift.
+- Kombinér med beslutningstræning: farven bestemmer hvilken finte/aflevering
+  spilleren skal lave efter modtagelsen.
+
+**Multi-telefon**
+- QR-kode i stedet for 4-cifret kode for hurtigere parring.
+- 4. rolle som "coach-skærm" der viser alle 3 telefoners farver/historik.
+
+**Data & feedback**
+- Log reps, gennemsnitligt interval og session-varighed, eksportér til CSV.
+- Coach markerer manuelt rigtig/forkert pr. rep for at tracke præcision.
+- Mikrofon-baseret automatisk reaktionstid (kræver taledetektion – fase 2).
+
+**Fremtid**
+- Pak som rigtig iOS-app via Capacitor for haptik, App Store-distribution
+  og bedre baggrundsopførsel.
+- Apple Watch-fjernbetjening til coachen (start/pause/stop).
+
+---
+
+## Teknisk opbygning
+
+```
+index.html, src/            Vite + TypeScript, ingen UI-framework (holder
+                             appen let og hurtig – vigtigt når farveskift
+                             skal ramme skærmen med det samme).
+src/drill.ts                 Solo-tilstandens lokale timer-loop.
+src/net/, src/pairSession.ts WebSocket-klient + delt tilstand for parring.
+src/colorScreen.ts            Den fælles fuldskærms-farvevisning.
+public/                       PWA-manifest, ikoner, offline service worker.
+server/server.mjs             Relay-server til "Par sammen" (rum, timing,
+                               garanti for forskellige farver pr. telefon).
+```

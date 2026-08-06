@@ -1,0 +1,17 @@
+{
+  "name": "reactx",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ReactX – reaktionstræning til fodbold og andre sportsgrene. Skærmen på telefonen skifter mellem farver, som spilleren skal scanne og råbe højt, mens bolden er på vej tilbage fra en rebounder.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host",
+    "gen-icons": "node scripts/generate-icons.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

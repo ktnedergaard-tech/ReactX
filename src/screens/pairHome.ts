@@ -1,13 +1,11 @@
 import type { Nav } from '../app';
 import { pairSession } from '../pairSession';
-import { loadServerUrl } from '../storage';
+import { loadServerUrl, hasAutoServerUrl } from '../storage';
 import { unlockAudio } from '../cues';
-import { DEFAULT_RELAY_URL } from '../config';
-
-const HAS_BUILT_IN_SERVER = DEFAULT_RELAY_URL.trim().length > 0;
 
 export function renderPairHome(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
+  const hasAutoServer = hasAutoServerUrl();
   const screen = document.createElement('div');
   screen.className = 'screen';
 
@@ -44,12 +42,19 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   urlInput.autocomplete = 'off';
   urlInput.spellcheck = false;
 
-  if (HAS_BUILT_IN_SERVER) {
-    // Der er en indbygget server – de fleste skal aldrig se eller røre feltet.
+  if (hasAutoServer) {
+    // Adressen er fundet automatisk – de fleste skal aldrig se eller røre feltet.
+    const autoNote = document.createElement('p');
+    autoNote.style.fontSize = '0.8rem';
+    autoNote.style.color = 'var(--text-dim)';
+    autoNote.style.margin = '-6px 0 14px';
+    autoNote.textContent = '✓ Server fundet automatisk – I skal ikke gøre noget.';
+    card.appendChild(autoNote);
+
     const details = document.createElement('details');
     details.style.marginBottom = '14px';
     const summary = document.createElement('summary');
-    summary.textContent = 'Avanceret: brug egen server-adresse';
+    summary.textContent = 'Avanceret: brug en anden server-adresse';
     summary.style.fontSize = '0.78rem';
     summary.style.color = 'var(--text-dim)';
     summary.style.cursor = 'pointer';
@@ -66,12 +71,21 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     hint.style.fontSize = '0.75rem';
     hint.style.color = 'var(--text-dim)';
     hint.style.margin = '4px 0 0';
-    hint.textContent =
-      'Kun nødvendigt hvis I selv kører en server lokalt (fx til en bane uden god mobildækning) – se README.';
+    hint.textContent = 'Overskriv kun hvis I ved I skal bruge en anden server end den fundne.';
     details.appendChild(hint);
 
     card.appendChild(details);
   } else {
+    const localTip = document.createElement('div');
+    localTip.className = 'error-banner';
+    localTip.style.color = 'var(--text)';
+    localTip.style.background = 'var(--panel-2)';
+    localTip.style.borderColor = '#262d3b';
+    localTip.style.marginBottom = '14px';
+    localTip.innerHTML =
+      '<strong>Bruger I en lokal server?</strong><br>Luk denne side og åbn i stedet adressen (eller scan QR-koden), som vises i terminal-vinduet, da I startede den lokale server. Så udfyldes alt automatisk.';
+    card.appendChild(localTip);
+
     const urlField = document.createElement('div');
     urlField.className = 'field';
     urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
@@ -80,7 +94,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     example.style.fontSize = '0.75rem';
     example.style.color = 'var(--text-dim)';
     example.style.marginTop = '4px';
-    example.textContent = 'Feltet er tomt indtil du selv skriver noget – fx: ws://192.168.1.23:8080';
+    example.textContent = 'Kun til jeres egen cloud-server, fx: wss://reactx-relay.onrender.com';
     urlField.appendChild(example);
     card.appendChild(urlField);
 
@@ -88,8 +102,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     hint.style.fontSize = '0.75rem';
     hint.style.color = 'var(--text-dim)';
     hint.style.margin = '4px 0 14px';
-    hint.textContent =
-      'Alle 3 telefoner skal bruge samme server-adresse. Dobbeltklik server/start-mac.command (eller start-windows.bat) på en bærbar på samme wifi – terminalen viser den adresse I skal indtaste her. Se README for detaljer.';
+    hint.textContent = 'Alle 3 telefoner skal bruge samme server-adresse. Se README for detaljer.';
     card.appendChild(hint);
   }
 
@@ -163,9 +176,9 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   /** Giver en konkret fejlbesked afhængig af om feltet er tomt eller bare forkert udfyldt. */
   function serverUrlError(url: string): string | null {
     if (url.length === 0) {
-      return HAS_BUILT_IN_SERVER
+      return hasAutoServer
         ? 'Server-adresse-feltet er tomt. Åbn "Avanceret" og indtast adressen fra terminal-vinduet.'
-        : 'Server-adresse-feltet er tomt. Skriv adressen, som vises i terminal-vinduet, da I startede den lokale server (fx ws://192.168.1.23:8080).';
+        : 'Server-adresse-feltet er tomt. Bruger I en lokal server, skal I åbne dens adresse direkte i Safari i stedet (se boksen ovenfor) – feltet her er kun til jeres egen cloud-server.';
     }
     if (!isValidWsUrl(url)) {
       return 'Adressen skal starte med ws:// eller wss:// – tjek at du ikke er kommet til at skrive noget andet.';

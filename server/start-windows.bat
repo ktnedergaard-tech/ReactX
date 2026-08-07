@@ -1,5 +1,6 @@
 @echo off
-REM Dobbeltklik denne fil for at starte ReactX' parrings-server lokalt.
+REM Dobbeltklik denne fil for at starte ReactX lokalt - baade appen og
+REM parrings-serveren, saa alle telefoner kun skal besoege EN adresse.
 REM Kraever Node.js (gratis, https://nodejs.org - vaelg "LTS").
 cd /d "%~dp0"
 
@@ -11,6 +12,25 @@ if errorlevel 1 (
   exit /b 1
 )
 
+echo Forbereder appen...
+cd ..
+if not exist node_modules (
+  echo Foerste gang: installerer det, appen skal bruge...
+  call npm install
+  if errorlevel 1 (
+    echo Noget gik galt under installationen.
+    pause
+    exit /b 1
+  )
+)
+call npm run build
+if errorlevel 1 (
+  echo Noget gik galt under bygningen af appen.
+  pause
+  exit /b 1
+)
+cd server
+
 if not exist node_modules (
   echo Foerste gang: installerer det, serveren skal bruge...
   call npm install
@@ -19,11 +39,11 @@ if not exist node_modules (
     pause
     exit /b 1
   )
-  echo.
 )
 
+echo.
 echo ===================================================
-echo  ReactX parrings-server starter...
+echo  ReactX starter...
 echo ===================================================
 echo.
 call npm start

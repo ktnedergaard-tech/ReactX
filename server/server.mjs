@@ -7,21 +7,53 @@
 // alle telefoner skifter farve på nøjagtig samme tidspunkt uafhængigt af
 // forskelle i klokkeslæt/ydelse på de enkelte telefoner.
 //
-// Kør lokalt:   npm install && npm start   (lytter på PORT, default 8080)
-// Deploy gratis fx på Render/Fly/Railway – se README.md i repo-roden.
-// Kan også køres på en bærbar på samme wifi/hotspot som telefonerne, hvis
-// banen ikke har god mobildækning: telefonerne peger så på
-// ws://<den bærbares lokale ip>:8080 i stedet for en cloud-adresse.
+// Brug helst server/start-mac.command eller server/start-windows.bat i
+// stedet for at køre denne fil direkte – de bygger også selve appen først.
+//
+// Kør manuelt: (fra repo-roden) npm install && npm run build, derefter
+// (fra /server) npm install && npm start   (lytter på PORT, default 8080).
+// Hvis dist/ (den byggede app) findes, server denne proces BÅDE appen og
+// parringen på samme adresse – praktisk til en bærbar på samme wifi som
+// telefonerne, hvis banen ikke har god mobildækning. Hvis dist/ ikke findes
+// (fx ved cloud-deploy på Render/Fly/Railway – se README.md), virker
+// processen kun som ren parrings-server for en app hostet et andet sted
+// (fx Vercel).
 
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { randomBytes } from 'node:crypto';
 import { networkInterfaces, hostname } from 'node:os';
+import { readFile, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { join, extname, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import qrcode from 'qrcode-terminal';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 8080;
 const MAX_SLOTS = 3;
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // uden 0/O/1/I for at undgå forveksling
 const ROOM_TTL_MS = 4 * 60 * 60 * 1000; // ryd forladte rum efter 4 timer
+
+// Hvis appen er bygget (npm run build i repo-roden), ligger den her. Når
+// mappen findes, server denne proces også selve appen som almindelige
+// http(s)-sider – se kommentaren ved createServer() for hvorfor det er
+// afgørende for at "Par sammen" kan virke lokalt uden internet.
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DIST_DIR = join(__dirname, '..', 'dist');
+const HAS_BUILT_APP = existsSync(join(DIST_DIR, 'index.html'));
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.txt': 'text/plain; charset=utf-8',
+};
 
 const DEFAULT_SETTINGS = {
   minIntervalMs: 1500,
@@ -258,7 +290,56 @@ function removeFromRoom(ws) {
   }
 }
 
+// Server selve appen (dist/) hvis den er bygget – ellers et simpelt
+// health-check-svar (fx når denne proces kun kører som cloud relay-server,
+// hvor appen i stedet hostes separat på Vercel/Netlify).
+//
+// Hvorfor: mobilbrowsere blokerer "mixed content" – en https-side (som
+// Vercel-udgaven) må ikke åbne en almindelig ws://-forbindelse til en lokal
+// server uden TLS. Ved at lade DENNE proces også vise appen over almindelig
+// http, kommer siden og WebSocket-forbindelsen fra samme (ukrypterede)
+// oprindelse, så telefonerne aldrig rammer den blokering – og appen kan
+// selv regne serverens adresse ud fra den side, den blev åbnet fra, uden at
+// nogen skal skrive en adresse ind.
+async function serveStaticFile(req, res) {
+  try {
+    const url = new URL(req.url ?? '/', 'http://localhost');
+    let pathname = decodeURIComponent(url.pathname);
+    if (pathname === '/') pathname = '/index.html';
+    let filePath = join(DIST_DIR, pathname);
+
+    if (!filePath.startsWith(DIST_DIR)) {
+      res.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' });
+      res.end('Ugyldig sti');
+      return;
+    }
+
+    let stats;
+    try {
+      stats = await stat(filePath);
+    } catch {
+      stats = null;
+    }
+    if (!stats || stats.isDirectory()) {
+      // SPA-fallback: appen har ingen server-side ruter, så ukendte stier får index.html.
+      filePath = join(DIST_DIR, 'index.html');
+    }
+
+    const data = await readFile(filePath);
+    const contentType = MIME_TYPES[extname(filePath)] ?? 'application/octet-stream';
+    res.writeHead(200, { 'content-type': contentType });
+    res.end(data);
+  } catch {
+    res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
+    res.end('Serverfejl');
+  }
+}
+
 const server = createServer((req, res) => {
+  if (HAS_BUILT_APP) {
+    void serveStaticFile(req, res);
+    return;
+  }
   // Simpelt health-check endpoint, praktisk for hosting-platforme (Render m.fl.)
   res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
   res.end(`ReactX relay-server kører. Aktive rum: ${rooms.size}\n`);
@@ -393,18 +474,43 @@ server.listen(PORT, () => {
   const addrs = localAddresses();
   console.log(`ReactX relay-server lytter på port ${PORT}`);
   console.log('');
-  console.log('📱 Indtast denne adresse under "Server-adresse" i appen på ALLE telefoner');
-  console.log('   (alle telefoner + denne computer skal være på samme wifi/hotspot):');
-  console.log('');
+
+  if (!HAS_BUILT_APP) {
+    console.log('⚠️  Appen er ikke bygget (mangler dist/) – denne proces virker kun som');
+    console.log('   ren parrings-server. Kør "npm run build" i repo-roden først, eller brug');
+    console.log('   start-mac.command / start-windows.bat, som gør det automatisk.');
+    console.log('');
+  }
+
   if (addrs.length === 0) {
     console.log('   Kunne ikke finde en lokal netværksadresse automatisk – tjek at computeren er på wifi.');
+    console.log('');
   } else {
-    for (const addr of addrs) console.log(`   ws://${addr}:${PORT}`);
+    const mainAddr = addrs[0];
+    const mainUrl = HAS_BUILT_APP ? `http://${mainAddr}:${PORT}` : `ws://${mainAddr}:${PORT}`;
+
+    console.log('📱 Åbn denne adresse i Safari på ALLE telefoner (samme wifi/hotspot):');
+    console.log('');
+    console.log(`   ${mainUrl}`);
+    console.log('');
+    console.log('   ...eller scan denne QR-kode med kameraet i stedet for at skrive den:');
+    console.log('');
+    qrcode.generate(mainUrl, { small: true });
+    console.log('');
+
+    if (addrs.length > 1) {
+      console.log('   Andre adresser fundet på denne computer (brug kun hvis den ovenfor ikke virker):');
+      for (const addr of addrs.slice(1)) {
+        console.log(`   ${HAS_BUILT_APP ? 'http' : 'ws'}://${addr}:${PORT}`);
+      }
+      console.log('');
+    }
+
+    console.log(`   Mac-tip: hvis IP-adressen ændrer sig fra gang til gang, kan I ofte også`);
+    console.log(`   bruge ${HAS_BUILT_APP ? 'http' : 'ws'}://${hostname()}:${PORT} i stedet.`);
+    console.log('');
   }
-  console.log('');
-  console.log(`   Mac-tip: hvis IP-adressen ovenfor ændrer sig fra gang til gang, kan I ofte`);
-  console.log(`   også bruge ws://${hostname()}:${PORT} i stedet.`);
-  console.log('');
+
   console.log('   Luk dette vindue for at stoppe serveren igen.');
   console.log('');
 });

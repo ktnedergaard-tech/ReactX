@@ -62,27 +62,34 @@ noget spillerne skal tænke på.
 
 Da mange baner har dårlig mobildækning, er det mest driftsikre at køre
 serveren på en bærbar computer, som telefonerne er på samme wifi/hotspot
-som. Selve internetforbindelsen er kun nødvendig for at hente appen første
-gang (den er cachet bagefter) – parringen kører 100% lokalt på netværket.
+som. Denne server viser **både appen og styrer parringen** – telefonerne
+skal derfor IKKE åbne Vercel-linket, men adressen fra terminal-vinduet
+direkte. Det er med vilje: en https-side (som Vercel) må af sikkerhedsgrunde
+ikke oprette en almindelig (ikke-krypteret) forbindelse til en lokal server
+– browseren blokerer det stille og roligt ("mixed content"). Ved at åbne
+appen fra selve den lokale server undgås det problem helt, og appen kan
+samtidig regne sin egen adresse ud automatisk, uden at nogen skal skrive
+noget.
 
 1. Hent/klon dette repo til den bærbare, I tager med til træning/kamp.
 2. Dobbeltklik `server/start-mac.command` (Mac) eller
    `server/start-windows.bat` (Windows). Kræver Node.js installeret –
    scriptet siger til og linker til [nodejs.org](https://nodejs.org) hvis
-   det mangler. Første gang installeres serverens afhængigheder automatisk.
-3. Terminal-vinduet, der åbner, viser præcis den adresse I skal bruge, fx:
+   det mangler. Første gang bygger den appen og installerer det, serveren
+   skal bruge – det tager lidt længere tid første gang.
+3. Terminal-vinduet viser en adresse og en QR-kode, fx:
    ```
-   ws://192.168.1.23:8080
+   http://192.168.1.23:8080
    ```
-   Indtast den under "Server-adresse" (findes under "Avanceret" i Par
-   sammen-menuen) på **alle 3 telefoner**.
+   **Åbn den adresse i Safari på alle 3 telefoner** (eller scan QR-koden
+   med kameraet – så skal ingen skrive noget). Herefter virker "Opret
+   rum"/"Deltag i rum" helt automatisk, uden noget adresse-felt.
 4. Alle telefoner + den bærbare skal være på samme wifi (eller den
    bærbares hotspot, hvis banen ikke har wifi). Luk vinduet for at stoppe
    serveren igen efter træning.
 
 Adressen kan skifte fra gang til gang (afhænger af netværket I er på), så
-tjek terminal-vinduet hver gang – det er derfor denne løsning ikke er bagt
-ind som fast standard-adresse i appen sådan som en cloud-server ville være.
+tjek terminal-vinduet/QR-koden hver gang I starter serveren.
 
 ### Alternativ: gratis cloud-hosting (kræver internet)
 

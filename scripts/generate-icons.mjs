@@ -1,5 +1,8 @@
 // Genererer app-ikoner uden eksterne dependencies (rå PNG-encoder + zlib).
-// Design: mørk baggrund med et 2x2 gitter i de fire trænings-farver.
+// Design: et "reaktions-hjul" – en cirkel delt i 4 farvede kvadranter på en
+// mørk, helt uigennemsigtig baggrund (ingen alpha), så filerne også er
+// klar til App Store Connects 1024×1024-ikon, som Apple kræver uden
+// transparens og uden forudrundede hjørner (iOS runder selv hjørnerne af).
 import { deflateSync } from 'node:zlib';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -9,11 +12,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, '..', 'public', 'icons');
 mkdirSync(outDir, { recursive: true });
 
-const BG = [5, 7, 12];
+const BG = [5, 8, 15];
 const BLUE = [37, 99, 235];
 const YELLOW = [234, 179, 8];
 const RED = [220, 38, 38];
 const GREEN = [22, 163, 74];
+const RING = [22, 27, 38]; // svag ring mellem baggrund og hjul, for dybde
 
 function crc32(buf) {
   let c;
@@ -40,22 +44,34 @@ function chunk(type, data) {
   return Buffer.concat([len, typeBuf, data, crcBuf]);
 }
 
-function encodePNG(width, height, rgba) {
+function encodePNG(width, height, rgba, { alpha = true } = {}) {
   const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
   ihdr[8] = 8; // bit depth
-  ihdr[9] = 6; // color type RGBA
+  ihdr[9] = alpha ? 6 : 2; // 6 = RGBA, 2 = RGB (ingen alpha-kanal overhovedet)
   ihdr[10] = 0;
   ihdr[11] = 0;
   ihdr[12] = 0;
 
-  const stride = width * 4;
+  const channels = alpha ? 4 : 3;
+  const stride = width * channels;
   const raw = Buffer.alloc((stride + 1) * height);
   for (let y = 0; y < height; y++) {
     raw[y * (stride + 1)] = 0; // filter: none
-    rgba.copy(raw, y * (stride + 1) + 1, y * stride, y * stride + stride);
+    if (alpha) {
+      rgba.copy(raw, y * (stride + 1) + 1, y * width * 4, y * width * 4 + width * 4);
+    } else {
+      // Drop alpha-byte pr. pixel, så filen er ren RGB (Apples krav til App Store-ikonet).
+      for (let x = 0; x < width; x++) {
+        const src = (y * width + x) * 4;
+        const dst = y * (stride + 1) + 1 + x * 3;
+        raw[dst] = rgba[src];
+        raw[dst + 1] = rgba[src + 1];
+        raw[dst + 2] = rgba[src + 2];
+      }
+    }
   }
   const idat = deflateSync(raw, { level: 9 });
 
@@ -67,83 +83,75 @@ function encodePNG(width, height, rgba) {
   ]);
 }
 
-function drawIcon(size, { padRatio = 0, radiusRatio = 0.22 } = {}) {
+function mix(a, b, t) {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+}
+
+/**
+ * Tegner "reaktions-hjulet": en cirkel delt i 4 farvede kvadranter (roteret
+ * 45° så grænserne går diagonalt, mere dynamisk end lige op/ned-delinger),
+ * med et blødt anti-aliaseret kant og en tynd ring for dybde, på en helt
+ * uigennemsigtig mørk baggrund.
+ */
+function drawIcon(size) {
   const rgba = Buffer.alloc(size * size * 4);
-  const pad = Math.round(size * padRatio);
-  const inner = size - pad * 2;
-  const r = Math.round(size * radiusRatio);
-  const cx0 = pad, cy0 = pad, cx1 = pad + inner, cy1 = pad + inner;
-
-  const inRoundedRect = (x, y) => {
-    if (x < cx0 || x >= cx1 || y < cy0 || y >= cy1) return false;
-    const nx = x < cx0 + r ? cx0 + r : x >= cx1 - r ? cx1 - r : x;
-    const ny = y < cy0 + r ? cy0 + r : y >= cy1 - r ? cy1 - r : y;
-    const dx = x - nx, dy = y - ny;
-    return dx * dx + dy * dy <= r * r + 1;
-  };
-
-  const gap = Math.max(2, Math.round(inner * 0.045));
-  const cellW = Math.floor((inner - gap) / 2);
-  const cellH = Math.floor((inner - gap) / 2);
-  const cellR = Math.round(cellW * 0.16);
-
-  const cells = [
-    { x: cx0, y: cy0, color: BLUE },
-    { x: cx0 + cellW + gap, y: cy0, color: YELLOW },
-    { x: cx0, y: cy0 + cellH + gap, color: RED },
-    { x: cx0 + cellW + gap, y: cy0 + cellH + gap, color: GREEN },
-  ];
-
-  const inRoundedCell = (x, y, cell) => {
-    const { x: cx, y: cy } = cell;
-    if (x < cx || x >= cx + cellW || y < cy || y >= cy + cellH) return false;
-    const nx = x < cx + cellR ? cx + cellR : x >= cx + cellW - cellR ? cx + cellW - cellR : x;
-    const ny = y < cy + cellR ? cy + cellR : y >= cy + cellH - cellR ? cy + cellH - cellR : y;
-    const dx = x - nx, dy = y - ny;
-    return dx * dx + dy * dy <= cellR * cellR + 1;
-  };
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size * 0.4;
+  const ringR = r * 1.08;
+  const quadrants = [BLUE, YELLOW, RED, GREEN]; // med uret fra kl. 1-2-position
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const i = (y * size + x) * 4;
-      let color = null;
-      if (inRoundedRect(x, y)) {
-        color = BG;
-        for (const cell of cells) {
-          if (inRoundedCell(x, y, cell)) {
-            color = cell.color;
-            break;
-          }
+      const dx = x - cx + 0.5;
+      const dy = y - cy + 0.5;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      let color = BG;
+
+      if (dist <= ringR + 1) {
+        let angle = Math.atan2(dy, dx);
+        if (angle < 0) angle += Math.PI * 2;
+        // Roter 45° så kvadrant-grænserne går diagonalt (kl. 1:30, 4:30, 7:30, 10:30).
+        const seg = Math.floor((((angle + Math.PI / 4) % (Math.PI * 2)) / (Math.PI * 2)) * 4);
+        const wheelColor = quadrants[seg];
+
+        if (dist <= r) {
+          color = wheelColor;
+          // Blødt anti-aliaseret ydre kant på selve hjulet.
+          const edge = r - dist;
+          if (edge < 1) color = mix(BG, wheelColor, Math.max(0, edge));
+        } else {
+          // Tynd mørk ring mellem hjul og baggrund, for lidt dybde/kontrast.
+          const t = (dist - r) / (ringR - r);
+          color = mix(RING, BG, Math.min(1, Math.max(0, t)));
         }
       }
-      if (color) {
-        rgba[i] = color[0];
-        rgba[i + 1] = color[1];
-        rgba[i + 2] = color[2];
-        rgba[i + 3] = 255;
-      } else {
-        rgba[i] = 0;
-        rgba[i + 1] = 0;
-        rgba[i + 2] = 0;
-        rgba[i + 3] = 0;
-      }
+
+      rgba[i] = Math.round(color[0]);
+      rgba[i + 1] = Math.round(color[1]);
+      rgba[i + 2] = Math.round(color[2]);
+      rgba[i + 3] = 255;
     }
   }
   return rgba;
 }
 
-function writeIcon(name, size, opts) {
-  const rgba = drawIcon(size, opts);
-  const png = encodePNG(size, size, rgba);
+function writeIcon(name, size, { alpha = true } = {}) {
+  const rgba = drawIcon(size);
+  const png = encodePNG(size, size, rgba, { alpha });
   writeFileSync(join(outDir, name), png);
-  console.log('wrote', name, `${size}x${size}`);
+  console.log('wrote', name, `${size}x${size}`, alpha ? '(RGBA)' : '(RGB, ingen alpha)');
 }
 
-writeIcon('icon-32.png', 32, { radiusRatio: 0.22 });
-writeIcon('icon-192.png', 192, { radiusRatio: 0.22 });
-writeIcon('icon-512.png', 512, { radiusRatio: 0.22 });
-writeIcon('apple-touch-icon-180.png', 180, { radiusRatio: 0.22 });
-// Maskable ikon: indhold skal ligge inden for de midterste ~80%, baggrunden fylder hele lærredet.
-writeIcon('icon-maskable-512.png', 512, { padRatio: 0.1, radiusRatio: 0 });
+writeIcon('icon-32.png', 32);
+writeIcon('icon-192.png', 192);
+writeIcon('icon-512.png', 512);
+writeIcon('apple-touch-icon-180.png', 180);
+writeIcon('icon-maskable-512.png', 512);
+// Til App Store Connect (uploades manuelt der ved en evt. senere native
+// indpakning) – skal være 1024×1024, kvadratisk, UDEN alpha-kanal.
+writeIcon('app-store-icon-1024.png', 1024, { alpha: false });
 
 console.log('Ikoner genereret i', outDir);

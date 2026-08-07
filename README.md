@@ -186,3 +186,23 @@ public/                       PWA-manifest, ikoner, offline service worker.
 server/server.mjs             Relay-server til "Par sammen" (rum, timing,
                                garanti for forskellige farver pr. telefon).
 ```
+
+---
+
+## Klargøring til App Store
+
+Appen er i dag en PWA (installeres via "Føj til hjemmeskærm"), ikke en
+native app fra App Store. For at komme i App Store skal den pakkes ind som
+en rigtig iOS-app, fx med [Capacitor](https://capacitorjs.com) (kører den
+eksisterende webapp i en nativ wrapper) – det kræver et Apple
+Developer-konto (99 USD/år), Xcode og manuel indsendelse til Apple, som
+ingen af os kan gøre uden adgang til en Mac og en Apple-konto.
+
+Det designmæssige er forberedt til den dag:
+
+- **App-ikon**: `public/icons/app-store-icon-1024.png` er et 1024×1024
+  ikon uden alpha-kanal/transparens, sådan som Apple kræver det til App
+  Store Connect. Genereres sammen med de andre ikoner via
+  `npm run gen-icons` (se `scripts/generate-icons.mjs`).
+- **Visuelt design**: ét gennemgående mørkt tema, samme farvepalet og
+  "reaktions-hjul"-ikon overalt (hjemmeskærm, app-ikon, favicon).

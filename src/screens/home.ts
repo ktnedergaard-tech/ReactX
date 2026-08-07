@@ -5,6 +5,7 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   const screen = document.createElement('div');
   screen.className = 'screen screen--centered';
   screen.innerHTML = `
+    <img class="app-mark" src="./icons/icon-192.png" alt="" width="84" height="84" />
     <h1 class="logo">ReactX</h1>
     <p class="subtitle">Fuldskærms farvereaktion til reaktionstræning. Placér telefonen(erne) så du kan scanne dem, mens bolden er på vej tilbage — råb farverne højt, inden du modtager.</p>
   `;

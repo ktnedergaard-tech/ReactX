@@ -58,10 +58,38 @@ ikke en vedvarende baggrundsproces, som en WebSocket-server kræver. Serveren
 skal derfor køre et andet sted. Det er et **engangs-setup for coachen**, ikke
 noget spillerne skal tænke på.
 
-### Ét-klik opsætning (anbefalet)
+### Lokalt på en bærbar (anbefalet – virker uden internet på banen)
 
-Repoet indeholder en `render.yaml`, så [Render](https://render.com) kan
-oprette serveren automatisk:
+Da mange baner har dårlig mobildækning, er det mest driftsikre at køre
+serveren på en bærbar computer, som telefonerne er på samme wifi/hotspot
+som. Selve internetforbindelsen er kun nødvendig for at hente appen første
+gang (den er cachet bagefter) – parringen kører 100% lokalt på netværket.
+
+1. Hent/klon dette repo til den bærbare, I tager med til træning/kamp.
+2. Dobbeltklik `server/start-mac.command` (Mac) eller
+   `server/start-windows.bat` (Windows). Kræver Node.js installeret –
+   scriptet siger til og linker til [nodejs.org](https://nodejs.org) hvis
+   det mangler. Første gang installeres serverens afhængigheder automatisk.
+3. Terminal-vinduet, der åbner, viser præcis den adresse I skal bruge, fx:
+   ```
+   ws://192.168.1.23:8080
+   ```
+   Indtast den under "Server-adresse" (findes under "Avanceret" i Par
+   sammen-menuen) på **alle 3 telefoner**.
+4. Alle telefoner + den bærbare skal være på samme wifi (eller den
+   bærbares hotspot, hvis banen ikke har wifi). Luk vinduet for at stoppe
+   serveren igen efter træning.
+
+Adressen kan skifte fra gang til gang (afhænger af netværket I er på), så
+tjek terminal-vinduet hver gang – det er derfor denne løsning ikke er bagt
+ind som fast standard-adresse i appen sådan som en cloud-server ville være.
+
+### Alternativ: gratis cloud-hosting (kræver internet)
+
+Hvis I hellere vil have en fast adresse der virker hvor som helst med
+internet (og slipper for at have en bærbar med), indeholder repoet en
+`render.yaml`, så [Render](https://render.com) kan oprette serveren
+automatisk:
 
 **[→ Deploy relay-serveren til Render](https://render.com/deploy?repo=https://github.com/ktnedergaard-tech/ReactX)**
 
@@ -73,18 +101,8 @@ oprette serveren automatisk:
    for alle, uden at nogen skal indtaste noget.
 
 Bemærk: Renders gratis plan går i dvale efter inaktivitet og bruger nogle
-sekunder på at vågne ved første forbindelse – helt fint til træning, men
-værd at vide hvis den første "Opret rum" virker langsomt.
-
-**Andre muligheder for at køre serveren:**
-
-1. **Anden cloud-hosting**: Fly.io, Railway m.fl. virker også – peg blot på
-   `/server`, build-kommando `npm install`, start-kommando `npm start`.
-2. **Lokalt på en bærbar til banen**: hvis banen ikke har god
-   mobildækning, kan I køre serveren på en bærbar der laver wifi-hotspot
-   (eller er på samme wifi som telefonerne). Telefonerne peger så på
-   `ws://<den-bærbares-lokale-ip>:8080` – ingen internetforbindelse
-   nødvendig undervejs.
+sekunder på at vågne ved første forbindelse. Fly.io og Railway virker også
+efter samme opskrift (peg på `/server`, build `npm install`, start `npm start`).
 
 Serveren er bevidst holdt simpel (rum gemmes i hukommelsen, ingen database) –
 fuldt tilstrækkeligt til en træningssession, men rum forsvinder hvis

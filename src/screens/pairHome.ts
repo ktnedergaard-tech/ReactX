@@ -35,7 +35,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
 
   const urlInput = document.createElement('input');
   urlInput.type = 'text';
-  urlInput.placeholder = 'wss://dit-reactx-relay.example.com';
+  urlInput.placeholder = 'ws://192.168.1.23:8080';
   urlInput.value = loadServerUrl() || '';
   urlInput.autocapitalize = 'off';
   urlInput.autocomplete = 'off';
@@ -80,7 +80,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     hint.style.color = 'var(--text-dim)';
     hint.style.margin = '-6px 0 14px';
     hint.textContent =
-      'Alle 3 telefoner skal bruge samme server-adresse. Se README for hvordan I selv sætter en gratis relay-server op (eller kører den lokalt på samme wifi til stævner/træning uden internet).';
+      'Alle 3 telefoner skal bruge samme server-adresse. Dobbeltklik server/start-mac.command (eller start-windows.bat) på en bærbar på samme wifi – terminalen viser den adresse I skal indtaste her. Se README for detaljer.';
     card.appendChild(hint);
   }
 

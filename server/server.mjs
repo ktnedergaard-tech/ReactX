@@ -16,6 +16,7 @@
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { randomBytes } from 'node:crypto';
+import { networkInterfaces, hostname } from 'node:os';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 8080;
 const MAX_SLOTS = 3;
@@ -376,6 +377,34 @@ server.on('close', () => {
   clearInterval(roomCleanup);
 });
 
+/** Finder computerens lokale netværks-IP'er, så man ikke selv skal lede efter dem. */
+function localAddresses() {
+  const nets = networkInterfaces();
+  const addrs = [];
+  for (const ifaceList of Object.values(nets)) {
+    for (const net of ifaceList ?? []) {
+      if (net.family === 'IPv4' && !net.internal) addrs.push(net.address);
+    }
+  }
+  return addrs;
+}
+
 server.listen(PORT, () => {
+  const addrs = localAddresses();
   console.log(`ReactX relay-server lytter på port ${PORT}`);
+  console.log('');
+  console.log('📱 Indtast denne adresse under "Server-adresse" i appen på ALLE telefoner');
+  console.log('   (alle telefoner + denne computer skal være på samme wifi/hotspot):');
+  console.log('');
+  if (addrs.length === 0) {
+    console.log('   Kunne ikke finde en lokal netværksadresse automatisk – tjek at computeren er på wifi.');
+  } else {
+    for (const addr of addrs) console.log(`   ws://${addr}:${PORT}`);
+  }
+  console.log('');
+  console.log(`   Mac-tip: hvis IP-adressen ovenfor ændrer sig fra gang til gang, kan I ofte`);
+  console.log(`   også bruge ws://${hostname()}:${PORT} i stedet.`);
+  console.log('');
+  console.log('   Luk dette vindue for at stoppe serveren igen.');
+  console.log('');
 });

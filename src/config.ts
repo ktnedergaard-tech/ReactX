@@ -7,4 +7,4 @@
  * (fx Render via render.yaml i repo-roden). Se README.md, afsnittet
  * "Parrings-server", for hvordan.
  */
-export const DEFAULT_RELAY_URL = '';
+export const DEFAULT_RELAY_URL = 'wss://reactx-relay.onrender.com';

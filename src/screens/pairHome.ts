@@ -35,7 +35,10 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
 
   const urlInput = document.createElement('input');
   urlInput.type = 'text';
-  urlInput.placeholder = 'ws://192.168.1.23:8080';
+  // Bevidst IKKE en tekst der ligner en rigtig adresse (fx en IP) – det
+  // fik tidligere brugere til at tro feltet var udfyldt i forvejen og
+  // trykke videre uden selv at skrive noget.
+  urlInput.placeholder = 'Indtast serverens adresse her';
   urlInput.value = loadServerUrl() || '';
   urlInput.autocapitalize = 'off';
   urlInput.autocomplete = 'off';
@@ -73,12 +76,18 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     urlField.className = 'field';
     urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
     urlField.appendChild(urlInput);
+    const example = document.createElement('div');
+    example.style.fontSize = '0.75rem';
+    example.style.color = 'var(--text-dim)';
+    example.style.marginTop = '4px';
+    example.textContent = 'Feltet er tomt indtil du selv skriver noget – fx: ws://192.168.1.23:8080';
+    urlField.appendChild(example);
     card.appendChild(urlField);
 
     const hint = document.createElement('p');
     hint.style.fontSize = '0.75rem';
     hint.style.color = 'var(--text-dim)';
-    hint.style.margin = '-6px 0 14px';
+    hint.style.margin = '4px 0 14px';
     hint.textContent =
       'Alle 3 telefoner skal bruge samme server-adresse. Dobbeltklik server/start-mac.command (eller start-windows.bat) på en bærbar på samme wifi – terminalen viser den adresse I skal indtaste her. Se README for detaljer.';
     card.appendChild(hint);
@@ -96,7 +105,8 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   createBtn.textContent = '➕ Opret rum (bliv vært)';
   createBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
-    if (!isValidWsUrl(url)) return showError('Indtast en gyldig server-adresse (starter med wss:// eller ws://).');
+    const err = serverUrlError(url);
+    if (err) return showError(err, urlInput);
     unlockAudio();
     pairSession.create(url);
     nav.go('pair-lobby');
@@ -135,17 +145,32 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   joinBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
     const code = codeInput.value.trim();
-    if (!isValidWsUrl(url)) return showError('Indtast en gyldig server-adresse (starter med wss:// eller ws://).');
-    if (code.length < 4) return showError('Indtast den 4-tegns rumkode fra værtens telefon.');
+    const err = serverUrlError(url);
+    if (err) return showError(err, urlInput);
+    if (code.length < 4) return showError('Indtast den 4-tegns rumkode fra værtens telefon.', codeInput);
     unlockAudio();
     pairSession.join(url, code);
     nav.go('pair-lobby');
   });
   card.appendChild(joinBtn);
 
-  function showError(msg: string): void {
+  function showError(msg: string, focusEl?: HTMLElement): void {
     errorBanner.textContent = msg;
     errorBanner.style.display = 'block';
+    focusEl?.focus();
+  }
+
+  /** Giver en konkret fejlbesked afhængig af om feltet er tomt eller bare forkert udfyldt. */
+  function serverUrlError(url: string): string | null {
+    if (url.length === 0) {
+      return HAS_BUILT_IN_SERVER
+        ? 'Server-adresse-feltet er tomt. Åbn "Avanceret" og indtast adressen fra terminal-vinduet.'
+        : 'Server-adresse-feltet er tomt. Skriv adressen, som vises i terminal-vinduet, da I startede den lokale server (fx ws://192.168.1.23:8080).';
+    }
+    if (!isValidWsUrl(url)) {
+      return 'Adressen skal starte med ws:// eller wss:// – tjek at du ikke er kommet til at skrive noget andet.';
+    }
+    return null;
   }
 
   body.appendChild(card);

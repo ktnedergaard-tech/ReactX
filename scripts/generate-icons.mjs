@@ -1,8 +1,10 @@
 // Genererer app-ikoner uden eksterne dependencies (rå PNG-encoder + zlib).
-// Design: et "reaktions-hjul" – en cirkel delt i 4 farvede kvadranter på en
-// mørk, helt uigennemsigtig baggrund (ingen alpha), så filerne også er
-// klar til App Store Connects 1024×1024-ikon, som Apple kræver uden
-// transparens og uden forudrundede hjørner (iOS runder selv hjørnerne af).
+// Design: det store "X" fra ordmærket (mint/teal-gradient) på appens egen
+// mørke baggrund – matcher det faktiske logo i appen og på forsiden, i
+// stedet for det tidligere "reaktions-hjul". Helt uigennemsigtig baggrund
+// (ingen alpha), så filerne også er klar til App Store Connects
+// 1024×1024-ikon, som Apple kræver uden transparens og uden forudrundede
+// hjørner (iOS runder selv hjørnerne af).
 import { deflateSync } from 'node:zlib';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -12,12 +14,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, '..', 'public', 'icons');
 mkdirSync(outDir, { recursive: true });
 
-const BG = [5, 8, 15];
-const BLUE = [37, 99, 235];
-const YELLOW = [234, 179, 8];
-const RED = [220, 38, 38];
-const GREEN = [22, 163, 74];
-const RING = [22, 27, 38]; // svag ring mellem baggrund og hjul, for dybde
+const BG = [5, 7, 12]; // = --bg
+const ACCENT = [22, 217, 172]; // = --accent
+const ACCENT_2 = [111, 252, 224]; // = --accent-2
 
 function crc32(buf) {
   let c;
@@ -87,46 +86,54 @@ function mix(a, b, t) {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 }
 
+/** Korteste afstand fra punkt (px,py) til linjestykket A→B. */
+function distToSegment(px, py, ax, ay, bx, by) {
+  const abx = bx - ax;
+  const aby = by - ay;
+  const apx = px - ax;
+  const apy = py - ay;
+  const abLen2 = abx * abx + aby * aby;
+  let t = abLen2 > 0 ? (apx * abx + apy * aby) / abLen2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  const cx = ax + abx * t;
+  const cy = ay + aby * t;
+  const dx = px - cx;
+  const dy = py - cy;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 /**
- * Tegner "reaktions-hjulet": en cirkel delt i 4 farvede kvadranter (roteret
- * 45° så grænserne går diagonalt, mere dynamisk end lige op/ned-delinger),
- * med et blødt anti-aliaseret kant og en tynd ring for dybde, på en helt
- * uigennemsigtig mørk baggrund.
+ * Tegner det store "X" – to tykke, rundede streger der krydser hinanden,
+ * fyldt med samme lodrette mint/teal-gradient som .logo-x i appen – på
+ * appens egen mørke baggrund.
  */
 function drawIcon(size) {
   const rgba = Buffer.alloc(size * size * 4);
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = size * 0.4;
-  const ringR = r * 1.08;
-  const quadrants = [BLUE, YELLOW, RED, GREEN]; // med uret fra kl. 1-2-position
+  const pad = size * 0.28;
+  const thickness = size * 0.16;
+  const half = thickness / 2;
+
+  // De to diagonale streger i X'et, hjørne til hjørne inden for paddingen.
+  const a1x = pad, a1y = pad, b1x = size - pad, b1y = size - pad; // "\"
+  const a2x = pad, a2y = size - pad, b2x = size - pad, b2y = pad; // "/"
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const i = (y * size + x) * 4;
-      const dx = x - cx + 0.5;
-      const dy = y - cy + 0.5;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const px = x + 0.5;
+      const py = y + 0.5;
+
+      const d = Math.min(
+        distToSegment(px, py, a1x, a1y, b1x, b1y),
+        distToSegment(px, py, a2x, a2y, b2x, b2y)
+      );
 
       let color = BG;
-
-      if (dist <= ringR + 1) {
-        let angle = Math.atan2(dy, dx);
-        if (angle < 0) angle += Math.PI * 2;
-        // Roter 45° så kvadrant-grænserne går diagonalt (kl. 1:30, 4:30, 7:30, 10:30).
-        const seg = Math.floor((((angle + Math.PI / 4) % (Math.PI * 2)) / (Math.PI * 2)) * 4);
-        const wheelColor = quadrants[seg];
-
-        if (dist <= r) {
-          color = wheelColor;
-          // Blødt anti-aliaseret ydre kant på selve hjulet.
-          const edge = r - dist;
-          if (edge < 1) color = mix(BG, wheelColor, Math.max(0, edge));
-        } else {
-          // Tynd mørk ring mellem hjul og baggrund, for lidt dybde/kontrast.
-          const t = (dist - r) / (ringR - r);
-          color = mix(RING, BG, Math.min(1, Math.max(0, t)));
-        }
+      const edge = half - d;
+      if (edge > -1) {
+        const t = Math.min(1, Math.max(0, (py - pad) / (size - pad * 2)));
+        const strokeColor = mix(ACCENT_2, ACCENT, t);
+        color = mix(BG, strokeColor, Math.min(1, Math.max(0, edge + 0.5)));
       }
 
       rgba[i] = Math.round(color[0]);

@@ -5,6 +5,7 @@ import { SoloDrill } from '../drill';
 import { ColorScreenView } from '../colorScreen';
 import { setWakeLockWanted, isWakeLockSupported } from '../wakelock';
 import { unlockAudio } from '../cues';
+import { t } from '../i18n';
 
 export function renderSoloSettings(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
@@ -15,10 +16,10 @@ export function renderSoloSettings(root: HTMLElement, nav: Nav): void {
 
   const topbar = document.createElement('div');
   topbar.className = 'topbar';
-  topbar.innerHTML = `<h2>Solo-indstillinger</h2>`;
+  topbar.innerHTML = `<h2>${t('solo.heading')}</h2>`;
   const back = document.createElement('button');
   back.className = 'btn btn--ghost btn--sm';
-  back.textContent = '← Tilbage';
+  back.textContent = t('common.back');
   back.addEventListener('click', () => nav.go('home'));
   topbar.prepend(back);
   screen.appendChild(topbar);
@@ -38,8 +39,7 @@ export function renderSoloSettings(root: HTMLElement, nav: Nav): void {
     note.style.fontSize = '0.75rem';
     note.style.color = 'var(--text-dim)';
     note.style.maxWidth = '380px';
-    note.textContent =
-      'Din iPhone understøtter ikke automatisk "hold skærmen tændt" i denne browser. Husk selv at skrue ned for auto-lås i Indstillinger, mens I træner.';
+    note.textContent = t('solo.noWakeLock');
     body.appendChild(note);
   }
 
@@ -47,7 +47,7 @@ export function renderSoloSettings(root: HTMLElement, nav: Nav): void {
   startBtn.className = 'btn btn--primary';
   startBtn.style.maxWidth = '420px';
   startBtn.style.width = '100%';
-  startBtn.textContent = 'Start øvelse';
+  startBtn.textContent = t('common.startDrill');
   startBtn.addEventListener('click', () => {
     unlockAudio();
     nav.go('solo-run');

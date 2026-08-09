@@ -6,6 +6,15 @@ import { renderPairHome } from './screens/pairHome';
 import { renderPairLobby } from './screens/pairLobby';
 import { renderPairRun } from './screens/pairRun';
 import { renderIdeas } from './screens/ideas';
+import { lang, t } from './i18n';
+
+// Det statiske index.html har et engelsk fallback (crawlere/link-
+// forhåndsvisninger kører ikke JS), men selve app-fanen/PWA-installationen
+// skal matche telefonens faktiske sprog, når vi kender det.
+document.title = t('meta.title');
+document.querySelector('meta[name="description"]')?.setAttribute('content', t('meta.description'));
+const manifestLink = document.getElementById('manifest-link');
+if (manifestLink) manifestLink.setAttribute('href', lang === 'da' ? './manifest.da.webmanifest' : './manifest.en.webmanifest');
 
 const root = document.getElementById('app');
 if (!root) throw new Error('#app mangler i index.html');

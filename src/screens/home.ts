@@ -1,5 +1,6 @@
 import type { Nav } from '../app';
 import { icons } from '../icons';
+import { t } from '../i18n';
 
 export function renderHome(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
@@ -14,15 +15,15 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   heroTop.className = 'hero-top';
   heroTop.innerHTML = `
     <h1 class="logo">React<span class="logo-x">X</span></h1>
-    <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
-    <p class="hero-desc">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
+    <p class="tagline">${t('home.tagline.1')}<span class="dot">.</span> ${t('home.tagline.2')}<span class="dot">.</span> ${t('home.tagline.3')}<span class="dot">.</span></p>
+    <p class="hero-desc">${t('home.desc')}</p>
   `;
   screen.appendChild(heroTop);
 
   const hero = document.createElement('div');
   hero.className = 'hero-banner';
   hero.innerHTML = `
-    <img src="./hero-player.webp" alt="Telefon på stativ viser farven lilla, mens en spiller scanner området og bolden er på vej" width="900" height="624" />
+    <img src="./hero-player.webp" alt="${t('home.heroImgAlt')}" width="900" height="624" />
   `;
   screen.appendChild(hero);
 
@@ -33,7 +34,7 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   soloBtn.className = 'hero-cta-btn hero-cta-btn--solo';
   soloBtn.innerHTML = `
     <span class="hero-cta-icon">${icons.tripod}</span>
-    <span class="hero-cta-label">Solo – én telefon</span>
+    <span class="hero-cta-label">${t('home.cta.solo')}</span>
     <span class="hero-cta-chevron">${icons.chevron}</span>
   `;
   soloBtn.addEventListener('click', () => nav.go('solo-settings'));
@@ -42,7 +43,7 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   pairBtn.className = 'hero-cta-btn hero-cta-btn--pair';
   pairBtn.innerHTML = `
     <span class="hero-cta-icon">${icons.multiDevice}</span>
-    <span class="hero-cta-label">Par sammen – 2-3 telefoner</span>
+    <span class="hero-cta-label">${t('home.cta.pair')}</span>
     <span class="hero-cta-chevron">${icons.chevron}</span>
   `;
   pairBtn.addEventListener('click', () => nav.go('pair-home'));
@@ -56,15 +57,15 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   // --- Sådan virker det ---
   const stepsSection = document.createElement('div');
   stepsSection.className = 'plain-section';
-  stepsSection.innerHTML = `<h2 class="plain-heading">Sådan virker det</h2>`;
+  stepsSection.innerHTML = `<h2 class="plain-heading">${t('home.steps.heading')}</h2>`;
   const steps = document.createElement('ol');
   steps.className = 'steps';
   steps.append(
-    stepEl(icons.tripod, '1. Opsætning', 'Placér telefonen på et stativ eller op ad noget, bag dig.'),
+    stepEl(icons.tripod, t('home.steps.1.title'), t('home.steps.1.body')),
     connector(),
-    stepEl(icons.eye, '2. Scan', 'Mens bolden spilles til dig, skifter skærmen farve.'),
+    stepEl(icons.eye, t('home.steps.2.title'), t('home.steps.2.body')),
     connector(),
-    stepEl(icons.voice, '3. Reagér', 'Råb farven højt, vend dig, og modtag bolden.')
+    stepEl(icons.voice, t('home.steps.3.title'), t('home.steps.3.body'))
   );
   stepsSection.appendChild(steps);
   content.appendChild(stepsSection);
@@ -73,15 +74,15 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   const multiSection = document.createElement('div');
   multiSection.className = 'plain-section';
   multiSection.innerHTML = `
-    <h2 class="plain-heading">Par flere telefoner</h2>
-    <p class="plain-text">Par op til 2 ekstra telefoner, og placér dem på mål, rebounders eller kegler. Hver telefon viser sin egen farve, aldrig den samme som de andre.</p>
+    <h2 class="plain-heading">${t('home.multi.heading')}</h2>
+    <p class="plain-text">${t('home.multi.body')}</p>
     <div class="multi-photo">
-      <img src="./multi-device.webp" alt="Spiller foran tre rebounders med hver sin farve – blå, gul og rød – og pile der viser bevægelsen mellem dem" width="900" height="488" />
+      <img src="./multi-device.webp" alt="${t('home.multi.imgAlt')}" width="900" height="488" />
       <div class="example-row example-row--overlay">
         <span class="swatch-dot" style="background:#1d4ed8"></span>
         <span class="swatch-dot" style="background:#dc2626"></span>
         <span class="swatch-dot" style="background:#dc2626"></span>
-        <span class="plain-text example-caption">3 telefoner i spil – samtidig</span>
+        <span class="plain-text example-caption">${t('home.multi.caption')}</span>
       </div>
     </div>
   `;
@@ -90,21 +91,21 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   // --- Fordele ---
   const benefitsSection = document.createElement('div');
   benefitsSection.className = 'plain-section';
-  benefitsSection.innerHTML = `<h2 class="plain-heading">Hvorfor reaktionstræning</h2>`;
+  benefitsSection.innerHTML = `<h2 class="plain-heading">${t('home.benefits.heading')}</h2>`;
   const benefitsRow = document.createElement('div');
   benefitsRow.className = 'benefits-row';
   benefitsRow.append(
-    benefitEl(icons.target, 'Bedre scanning', 'Opfat information omkring dig hurtigere.'),
-    benefitEl(icons.brain, 'Hurtigere reaktion', 'Reager hurtigere på visuelle stimuli.'),
-    benefitEl(icons.branch, 'Bedre beslutninger', 'Tag hurtigere og skarpere valg på banen.'),
-    benefitEl(icons.trendUp, 'Bedre præstation', 'Skærp hovedet, løft dit niveau.')
+    benefitEl(icons.target, t('home.benefits.1.title'), t('home.benefits.1.body')),
+    benefitEl(icons.brain, t('home.benefits.2.title'), t('home.benefits.2.body')),
+    benefitEl(icons.branch, t('home.benefits.3.title'), t('home.benefits.3.body')),
+    benefitEl(icons.trendUp, t('home.benefits.4.title'), t('home.benefits.4.body'))
   );
   benefitsSection.appendChild(benefitsRow);
   content.appendChild(benefitsSection);
 
   const ideasBtn = document.createElement('button');
   ideasBtn.className = 'link';
-  ideasBtn.textContent = 'Idéer til øvelser og forbedringer →';
+  ideasBtn.textContent = t('home.ideasLink');
   ideasBtn.addEventListener('click', () => nav.go('ideas'));
   content.appendChild(ideasBtn);
 

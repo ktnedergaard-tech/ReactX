@@ -1,8 +1,11 @@
 import type { Nav } from '../app';
 import { pairSession, type PairState } from '../pairSession';
 import { buildSettingsForm } from './settingsForm';
+import { t } from '../i18n';
 
-const SLOT_NAMES = ['Vært', 'Spiller 2', 'Spiller 3'];
+function slotNames(): string[] {
+  return [t('pairLobby.slot.host'), t('pairLobby.slot.player2'), t('pairLobby.slot.player3')];
+}
 
 export function renderPairLobby(root: HTMLElement, nav: Nav): () => void {
   root.innerHTML = '';
@@ -13,14 +16,14 @@ export function renderPairLobby(root: HTMLElement, nav: Nav): () => void {
   topbar.className = 'topbar';
   const back = document.createElement('button');
   back.className = 'btn btn--ghost btn--sm';
-  back.textContent = '← Forlad rum';
+  back.textContent = t('pairLobby.leave');
   back.addEventListener('click', () => {
     pairSession.leave();
     nav.go('home');
   });
   const statusPill = document.createElement('span');
   statusPill.className = 'status-pill';
-  statusPill.innerHTML = `<span class="led"></span><span>Forbinder…</span>`;
+  statusPill.innerHTML = `<span class="led"></span><span>${t('pairLobby.conn.connecting')}</span>`;
   topbar.append(back, statusPill);
   screen.appendChild(topbar);
 
@@ -38,7 +41,7 @@ export function renderPairLobby(root: HTMLElement, nav: Nav): () => void {
 
   const codeWrap = document.createElement('div');
   codeWrap.style.textAlign = 'center';
-  codeWrap.innerHTML = `<div style="color:var(--text-dim);font-size:0.8rem;margin-bottom:8px;">RUMKODE – del den med de to andre telefoner</div>`;
+  codeWrap.innerHTML = `<div style="color:var(--text-dim);font-size:0.8rem;margin-bottom:8px;">${t('pairLobby.codeLabel')}</div>`;
   const codeDisplay = document.createElement('div');
   codeDisplay.className = 'code-display';
   codeDisplay.textContent = '····';
@@ -55,14 +58,14 @@ export function renderPairLobby(root: HTMLElement, nav: Nav): () => void {
   const waitingMsg = document.createElement('p');
   waitingMsg.style.color = 'var(--text-dim)';
   waitingMsg.style.fontSize = '0.9rem';
-  waitingMsg.textContent = 'Venter på at værten starter øvelsen…';
+  waitingMsg.textContent = t('pairLobby.waiting');
   waitingMsg.style.display = 'none';
 
   const startBtn = document.createElement('button');
   startBtn.className = 'btn btn--primary';
   startBtn.style.width = '100%';
   startBtn.style.maxWidth = '420px';
-  startBtn.textContent = 'Start øvelse på alle telefoner';
+  startBtn.textContent = t('pairLobby.startAll');
   startBtn.style.display = 'none';
   startBtn.addEventListener('click', () => pairSession.start());
 
@@ -75,11 +78,11 @@ export function renderPairLobby(root: HTMLElement, nav: Nav): () => void {
   function render(state: PairState): void {
     // Forbindelsesstatus-pille
     const connLabel: Record<string, string> = {
-      idle: 'Ikke forbundet',
-      connecting: 'Forbinder…',
-      open: 'Forbundet',
-      reconnecting: 'Genopretter forbindelse…',
-      closed: 'Afbrudt',
+      idle: t('pairLobby.conn.idle'),
+      connecting: t('pairLobby.conn.connecting'),
+      open: t('pairLobby.conn.open'),
+      reconnecting: t('pairLobby.conn.reconnecting'),
+      closed: t('pairLobby.conn.closed'),
     };
     statusPill.className = 'status-pill' + (state.connState === 'open' ? ' ok' : state.connState === 'closed' ? ' bad' : '');
     statusPill.innerHTML = `<span class="led"></span><span>${connLabel[state.connState] ?? state.connState}</span>`;
@@ -99,7 +102,7 @@ export function renderPairLobby(root: HTMLElement, nav: Nav): () => void {
       const connected = state.connectedSlots.includes(slot);
       dot.className = 'dot' + (connected ? ' on' : '') + (slot === state.hostSlot ? ' host' : '');
       dot.textContent = connected ? '✓' : String(slot + 1);
-      dot.title = SLOT_NAMES[slot];
+      dot.title = slotNames()[slot];
       presence.appendChild(dot);
     }
 

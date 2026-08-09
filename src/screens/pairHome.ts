@@ -2,6 +2,7 @@ import type { Nav } from '../app';
 import { pairSession } from '../pairSession';
 import { loadServerUrl, hasAutoServerUrl } from '../storage';
 import { unlockAudio } from '../cues';
+import { t } from '../i18n';
 
 export function renderPairHome(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
@@ -11,10 +12,10 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
 
   const topbar = document.createElement('div');
   topbar.className = 'topbar';
-  topbar.innerHTML = `<h2>Par telefoner sammen</h2>`;
+  topbar.innerHTML = `<h2>${t('pairHome.heading')}</h2>`;
   const back = document.createElement('button');
   back.className = 'btn btn--ghost btn--sm';
-  back.textContent = '← Tilbage';
+  back.textContent = t('common.back');
   back.addEventListener('click', () => nav.go('home'));
   topbar.prepend(back);
   screen.appendChild(topbar);
@@ -36,7 +37,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   // Bevidst IKKE en tekst der ligner en rigtig adresse (fx en IP) – det
   // fik tidligere brugere til at tro feltet var udfyldt i forvejen og
   // trykke videre uden selv at skrive noget.
-  urlInput.placeholder = 'Indtast serverens adresse her';
+  urlInput.placeholder = t('pairHome.urlPlaceholder');
   urlInput.value = loadServerUrl() || '';
   urlInput.autocapitalize = 'off';
   urlInput.autocomplete = 'off';
@@ -48,13 +49,13 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     autoNote.style.fontSize = '0.8rem';
     autoNote.style.color = 'var(--text-dim)';
     autoNote.style.margin = '-6px 0 14px';
-    autoNote.textContent = '✓ Server fundet automatisk – I skal ikke gøre noget.';
+    autoNote.textContent = t('pairHome.autoFound');
     card.appendChild(autoNote);
 
     const details = document.createElement('details');
     details.style.marginBottom = '14px';
     const summary = document.createElement('summary');
-    summary.textContent = 'Avanceret: brug en anden server-adresse';
+    summary.textContent = t('pairHome.advanced');
     summary.style.fontSize = '0.78rem';
     summary.style.color = 'var(--text-dim)';
     summary.style.cursor = 'pointer';
@@ -63,7 +64,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     const urlField = document.createElement('div');
     urlField.className = 'field';
     urlField.style.marginTop = '10px';
-    urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
+    urlField.innerHTML = `<label><span>${t('pairHome.serverAddress')}</span></label>`;
     urlField.appendChild(urlInput);
     details.appendChild(urlField);
 
@@ -71,7 +72,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     hint.style.fontSize = '0.75rem';
     hint.style.color = 'var(--text-dim)';
     hint.style.margin = '4px 0 0';
-    hint.textContent = 'Overskriv kun hvis I ved I skal bruge en anden server end den fundne.';
+    hint.textContent = t('pairHome.overrideHint');
     details.appendChild(hint);
 
     card.appendChild(details);
@@ -82,19 +83,18 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     localTip.style.background = 'var(--panel-2)';
     localTip.style.borderColor = '#262d3b';
     localTip.style.marginBottom = '14px';
-    localTip.innerHTML =
-      '<strong>Bruger I en lokal server?</strong><br>Luk denne side og åbn i stedet adressen (eller scan QR-koden), som vises i terminal-vinduet, da I startede den lokale server. Så udfyldes alt automatisk.';
+    localTip.innerHTML = `<strong>${t('pairHome.localTitle')}</strong><br>${t('pairHome.localBody')}`;
     card.appendChild(localTip);
 
     const urlField = document.createElement('div');
     urlField.className = 'field';
-    urlField.innerHTML = `<label><span>Server-adresse</span></label>`;
+    urlField.innerHTML = `<label><span>${t('pairHome.serverAddress')}</span></label>`;
     urlField.appendChild(urlInput);
     const example = document.createElement('div');
     example.style.fontSize = '0.75rem';
     example.style.color = 'var(--text-dim)';
     example.style.marginTop = '4px';
-    example.textContent = 'Kun til jeres egen cloud-server, fx: wss://reactx-relay.onrender.com';
+    example.textContent = t('pairHome.exampleAddress');
     urlField.appendChild(example);
     card.appendChild(urlField);
 
@@ -102,7 +102,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
     hint.style.fontSize = '0.75rem';
     hint.style.color = 'var(--text-dim)';
     hint.style.margin = '4px 0 14px';
-    hint.textContent = 'Alle 3 telefoner skal bruge samme server-adresse. Se README for detaljer.';
+    hint.textContent = t('pairHome.sameServerHint');
     card.appendChild(hint);
   }
 
@@ -115,7 +115,7 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   createBtn.className = 'btn btn--primary';
   createBtn.style.width = '100%';
   createBtn.style.marginBottom = '10px';
-  createBtn.textContent = '➕ Opret rum (bliv vært)';
+  createBtn.textContent = t('pairHome.create');
   createBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
     const err = serverUrlError(url);
@@ -131,15 +131,15 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   divider.style.color = 'var(--text-dim)';
   divider.style.fontSize = '0.8rem';
   divider.style.margin = '10px 0';
-  divider.textContent = 'eller';
+  divider.textContent = t('pairHome.or');
   card.appendChild(divider);
 
   const codeField = document.createElement('div');
   codeField.className = 'field';
-  codeField.innerHTML = `<label><span>Rumkode</span></label>`;
+  codeField.innerHTML = `<label><span>${t('pairHome.roomCode')}</span></label>`;
   const codeInput = document.createElement('input');
   codeInput.type = 'text';
-  codeInput.placeholder = 'fx A7K2';
+  codeInput.placeholder = t('pairHome.roomCodePlaceholder');
   codeInput.maxLength = 4;
   codeInput.style.textTransform = 'uppercase';
   codeInput.style.fontSize = '1.4rem';
@@ -154,13 +154,13 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   const joinBtn = document.createElement('button');
   joinBtn.className = 'btn';
   joinBtn.style.width = '100%';
-  joinBtn.textContent = '🔗 Deltag i rum';
+  joinBtn.textContent = t('pairHome.join');
   joinBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
     const code = codeInput.value.trim();
     const err = serverUrlError(url);
     if (err) return showError(err, urlInput);
-    if (code.length < 4) return showError('Indtast den 4-tegns rumkode fra værtens telefon.', codeInput);
+    if (code.length < 4) return showError(t('pairHome.err.shortCode'), codeInput);
     unlockAudio();
     pairSession.join(url, code);
     nav.go('pair-lobby');
@@ -176,12 +176,10 @@ export function renderPairHome(root: HTMLElement, nav: Nav): void {
   /** Giver en konkret fejlbesked afhængig af om feltet er tomt eller bare forkert udfyldt. */
   function serverUrlError(url: string): string | null {
     if (url.length === 0) {
-      return hasAutoServer
-        ? 'Server-adresse-feltet er tomt. Åbn "Avanceret" og indtast adressen fra terminal-vinduet.'
-        : 'Server-adresse-feltet er tomt. Bruger I en lokal server, skal I åbne dens adresse direkte i Safari i stedet (se boksen ovenfor) – feltet her er kun til jeres egen cloud-server.';
+      return hasAutoServer ? t('pairHome.err.emptyAuto') : t('pairHome.err.emptyManual');
     }
     if (!isValidWsUrl(url)) {
-      return 'Adressen skal starte med ws:// eller wss:// – tjek at du ikke er kommet til at skrive noget andet.';
+      return t('pairHome.err.badFormat');
     }
     return null;
   }

@@ -1,4 +1,5 @@
 import type { Nav } from '../app';
+import { t } from '../i18n';
 
 export function renderIdeas(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
@@ -7,10 +8,10 @@ export function renderIdeas(root: HTMLElement, nav: Nav): void {
 
   const topbar = document.createElement('div');
   topbar.className = 'topbar';
-  topbar.innerHTML = `<h2>Idéer & forbedringer</h2>`;
+  topbar.innerHTML = `<h2>${t('ideas.heading')}</h2>`;
   const back = document.createElement('button');
   back.className = 'btn btn--ghost btn--sm';
-  back.textContent = '← Tilbage';
+  back.textContent = t('common.back');
   back.addEventListener('click', () => nav.go('home'));
   topbar.prepend(back);
   screen.appendChild(topbar);
@@ -27,43 +28,43 @@ export function renderIdeas(root: HTMLElement, nav: Nav): void {
   const list = document.createElement('div');
   list.className = 'ideas-list';
   list.innerHTML = `
-    <h3>Sværhedsgrad</h3>
+    <h3>${t('ideas.difficulty')}</h3>
     <ul>
-      <li>Progressivt tempo: intervallet bliver automatisk kortere hen gennem øvelsen/serien.</li>
-      <li>Flere farver (orange, lilla, hvid, sort) når basis-farverne bliver for nemme.</li>
-      <li>"Distraktor": en telefon går sort ind imellem – spilleren skal sige "ingen"/"sort" i stedet.</li>
-      <li>✅ Tal oveni farven (slå "Vis tal oveni farven" til i indstillingerne) – spilleren skal både se farve og læse/sige tal.</li>
-      <li>Bogstaver i stedet for tal, til endnu en variant.</li>
+      <li>${t('ideas.difficulty.1')}</li>
+      <li>${t('ideas.difficulty.2')}</li>
+      <li>${t('ideas.difficulty.3')}</li>
+      <li>${t('ideas.difficulty.4')}</li>
+      <li>${t('ideas.difficulty.5')}</li>
     </ul>
-    <h3>Træningsvarianter</h3>
+    <h3>${t('ideas.variants')}</h3>
     <ul>
-      <li>Peripert syn: farven vises kun kort (fx 300 ms) og går så sort igen – tvinger hurtigere blik.</li>
-      <li>"Kald og bekræft": næste skift kommer først når coachen trykker godkend (kræver mikrofon/håndholdt dommer-knap).</li>
-      <li>Retningsbestemt opstilling: telefoner i forskellige højder/vinkler for at træne nakke- og øjenbevægelse, ikke kun sideblik.</li>
-      <li>Kombinér med decision-making: farven bestemmer hvilken finte/aflevering spilleren skal udføre efter modtagelse.</li>
+      <li>${t('ideas.variants.1')}</li>
+      <li>${t('ideas.variants.2')}</li>
+      <li>${t('ideas.variants.3')}</li>
+      <li>${t('ideas.variants.4')}</li>
     </ul>
-    <h3>Multi-telefon</h3>
+    <h3>${t('ideas.multi')}</h3>
     <ul>
-      <li>Garanti for at de 3 telefoner aldrig viser samme farve samtidig (allerede indbygget i Pair-tilstand).</li>
-      <li>4. rolle som "coach-skærm" der viser alle 3 telefoners aktuelle farve og historik til feedback bagefter.</li>
-      <li>QR-kode i stedet for 4-cifret kode til hurtigere parring.</li>
+      <li>${t('ideas.multi.1')}</li>
+      <li>${t('ideas.multi.2')}</li>
+      <li>${t('ideas.multi.3')}</li>
     </ul>
-    <h3>Data & feedback</h3>
+    <h3>${t('ideas.data')}</h3>
     <ul>
-      <li>Log antal reps, gennemsnitligt interval og session-varighed – eksportér til CSV for progression over tid.</li>
-      <li>Coach markerer manuelt "rigtig/forkert" pr. rep via en enkel knap, så I kan tracke præcision, ikke kun tempo.</li>
-      <li>Mikrofon-baseret reaktionstid (avanceret, kræver taledetektion) – realistisk først som fase 2.</li>
+      <li>${t('ideas.data.1')}</li>
+      <li>${t('ideas.data.2')}</li>
+      <li>${t('ideas.data.3')}</li>
     </ul>
-    <h3>Praktisk opsætning</h3>
+    <h3>${t('ideas.setup')}</h3>
     <ul>
-      <li>Skru skærmens lysstyrke helt op og sluk "Sluk skærm automatisk" i iPhone-indstillinger, hvis Wake Lock ikke virker.</li>
-      <li>Brug billige telefonstativer/vægholdere til at placere telefonerne stabilt rundt om spilleren.</li>
-      <li>Kør parrings-serveren lokalt på en bærbar/hotspot til baner uden god mobildækning (se README).</li>
+      <li>${t('ideas.setup.1')}</li>
+      <li>${t('ideas.setup.2')}</li>
+      <li>${t('ideas.setup.3')}</li>
     </ul>
-    <h3>Fremtid</h3>
+    <h3>${t('ideas.future')}</h3>
     <ul>
-      <li>Pak appen som en rigtig iOS-app via Capacitor for haptik, App Store-distribution og bedre baggrundsopførsel.</li>
-      <li>Apple Watch-companion til coachen som fjernbetjening (start/pause/stop) uden at skulle røre en telefon.</li>
+      <li>${t('ideas.future.1')}</li>
+      <li>${t('ideas.future.2')}</li>
     </ul>
   `;
   card.appendChild(list);

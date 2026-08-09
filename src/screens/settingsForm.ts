@@ -1,5 +1,6 @@
-import { ALL_COLORS, CORE_COLORS, EXTRA_COLORS, type ColorId } from '../colors';
+import { ALL_COLORS, CORE_COLORS, EXTRA_COLORS, colorLabel, type ColorId } from '../colors';
 import { icons } from '../icons';
+import { t } from '../i18n';
 import type { DrillSettings } from '../storage';
 
 /**
@@ -16,10 +17,10 @@ export function buildSettingsForm(
   card.className = 'card';
 
   // --- Interval ---
-  card.appendChild(sectionLabel('Tempo'));
+  card.appendChild(sectionLabel(t('settings.tempo')));
   const minField = field(
-    'Hurtigst skift',
-    `${(settings.minIntervalMs / 1000).toFixed(1)} sek`,
+    t('settings.fastest'),
+    `${(settings.minIntervalMs / 1000).toFixed(1)} ${t('common.sec')}`,
     rangeInput(500, 8000, 100, settings.minIntervalMs, (v) => {
       settings.minIntervalMs = Math.min(v, settings.maxIntervalMs);
       onChange(settings);
@@ -27,8 +28,8 @@ export function buildSettingsForm(
     })
   );
   const maxField = field(
-    'Langsomst skift',
-    `${(settings.maxIntervalMs / 1000).toFixed(1)} sek`,
+    t('settings.slowest'),
+    `${(settings.maxIntervalMs / 1000).toFixed(1)} ${t('common.sec')}`,
     rangeInput(500, 8000, 100, settings.maxIntervalMs, (v) => {
       settings.maxIntervalMs = Math.max(v, settings.minIntervalMs);
       onChange(settings);
@@ -37,8 +38,8 @@ export function buildSettingsForm(
   );
 
   function refreshLabels(): void {
-    minField.labelValue.textContent = `${(settings.minIntervalMs / 1000).toFixed(1)} sek`;
-    maxField.labelValue.textContent = `${(settings.maxIntervalMs / 1000).toFixed(1)} sek`;
+    minField.labelValue.textContent = `${(settings.minIntervalMs / 1000).toFixed(1)} ${t('common.sec')}`;
+    maxField.labelValue.textContent = `${(settings.maxIntervalMs / 1000).toFixed(1)} ${t('common.sec')}`;
     (minField.input as HTMLInputElement).value = String(settings.minIntervalMs);
     (maxField.input as HTMLInputElement).value = String(settings.maxIntervalMs);
   }
@@ -46,10 +47,10 @@ export function buildSettingsForm(
   card.append(minField.wrap, maxField.wrap);
 
   // --- Farvepalette ---
-  card.appendChild(sectionLabel('Farver'));
+  card.appendChild(sectionLabel(t('settings.colors')));
   const paletteLabel = document.createElement('div');
   paletteLabel.className = 'field';
-  paletteLabel.innerHTML = `<label><span>Farver i spil</span></label>`;
+  paletteLabel.innerHTML = `<label><span>${t('settings.colorsInPlay')}</span></label>`;
   const swatches = document.createElement('div');
   swatches.className = 'swatches';
 
@@ -61,7 +62,7 @@ export function buildSettingsForm(
       el.className = 'swatch' + (settings.palette.includes(c.id) ? ' active' : '');
       el.style.background = c.hex;
       el.style.color = c.contrast;
-      el.textContent = c.label;
+      el.textContent = colorLabel(c.id);
       el.addEventListener('click', () => toggleColor(c.id));
       swatches.appendChild(el);
     }
@@ -86,7 +87,7 @@ export function buildSettingsForm(
   hint.style.fontSize = '0.75rem';
   hint.style.color = 'var(--text-dim)';
   hint.style.marginTop = '8px';
-  hint.textContent = `${CORE_COLORS.length} standardfarver + ${EXTRA_COLORS.length} ekstra til sværere øvelser eller flere telefoner.`;
+  hint.textContent = t('settings.colorsHint', { core: CORE_COLORS.length, extra: EXTRA_COLORS.length });
   paletteLabel.appendChild(hint);
   card.appendChild(paletteLabel);
 
@@ -96,43 +97,43 @@ export function buildSettingsForm(
   extraDetails.className = 'section-collapse';
   const extraSummary = document.createElement('summary');
   extraSummary.className = 'section-label section-label--toggle';
-  extraSummary.innerHTML = `<span>Ekstra</span><span class="section-collapse-chevron">${icons.chevron}</span>`;
+  extraSummary.innerHTML = `<span>${t('settings.extra')}</span><span class="section-collapse-chevron">${icons.chevron}</span>`;
   extraDetails.appendChild(extraSummary);
 
   const toggles = document.createElement('div');
   toggles.className = 'section-collapse-body';
   toggles.appendChild(
-    switchRow('Undgå samme farve to gange i træk', settings.avoidImmediateRepeat, (v) => {
+    switchRow(t('settings.avoidRepeat'), settings.avoidImmediateRepeat, (v) => {
       settings.avoidImmediateRepeat = v;
       onChange(settings);
     })
   );
   toggles.appendChild(
-    switchRow('Vis tæller (antal skift)', settings.showRepCounter, (v) => {
+    switchRow(t('settings.showCounter'), settings.showRepCounter, (v) => {
       settings.showRepCounter = v;
       onChange(settings);
     })
   );
   toggles.appendChild(
-    switchRow('Farveblind-hjælp (viser farvenavn som tekst)', settings.colorBlindLabels, (v) => {
+    switchRow(t('settings.colorBlind'), settings.colorBlindLabels, (v) => {
       settings.colorBlindLabels = v;
       onChange(settings);
     })
   );
   toggles.appendChild(
-    switchRow('Vis tal oveni farven (sig farve + tal)', settings.showNumbers, (v) => {
+    switchRow(t('settings.showNumbers'), settings.showNumbers, (v) => {
       settings.showNumbers = v;
       onChange(settings);
     })
   );
   toggles.appendChild(
-    switchRow('Lydsignal ved skift', settings.soundCue, (v) => {
+    switchRow(t('settings.soundCue'), settings.soundCue, (v) => {
       settings.soundCue = v;
       onChange(settings);
     })
   );
   toggles.appendChild(
-    switchRow('Vibration ved skift', settings.vibrationCue, (v) => {
+    switchRow(t('settings.vibrationCue'), settings.vibrationCue, (v) => {
       settings.vibrationCue = v;
       onChange(settings);
     })
@@ -141,14 +142,14 @@ export function buildSettingsForm(
   card.appendChild(extraDetails);
 
   // --- Nedtælling ---
-  card.appendChild(sectionLabel('Opstart'));
+  card.appendChild(sectionLabel(t('settings.start')));
   const countdownField = field(
-    'Nedtælling før start',
-    `${settings.countdownSeconds} sek`,
+    t('settings.countdown'),
+    `${settings.countdownSeconds} ${t('common.sec')}`,
     rangeInput(0, 10, 1, settings.countdownSeconds, (v) => {
       settings.countdownSeconds = v;
       onChange(settings);
-      countdownField.labelValue.textContent = `${v} sek`;
+      countdownField.labelValue.textContent = `${v} ${t('common.sec')}`;
     })
   );
   card.appendChild(countdownField.wrap);

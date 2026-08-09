@@ -1,25 +1,28 @@
 <!doctype html>
-<html lang="da">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <title>ReactX – Reaktionstræning</title>
-    <meta name="description" content="ReactX: fuldskærms farvereaktion til reaktionstræning i fodbold og andre sportsgrene. Par op til 3 telefoner sammen." />
+    <!-- Statisk fallback på engelsk (crawlere/link-forhåndsvisninger kører
+         ikke JS og kender ikke besøgendes sprog) – selve appens UI skifter
+         automatisk til dansk for danske telefoner, se src/i18n.ts. -->
+    <title>ReactX – Reaction Training</title>
+    <meta name="description" content="ReactX: full-screen color reactions for reaction training in football and other sports. Pair up to 3 phones together." />
     <meta name="theme-color" content="#05070c" />
 
     <!-- Del-forhåndsvisning (Open Graph / Twitter), så det opdaterede
          logo også vises når URL'en deles i fx iMessage, WhatsApp eller Slack -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="ReactX" />
-    <meta property="og:title" content="ReactX – Reaktionstræning" />
-    <meta property="og:description" content="Fuldskærms farvereaktion til reaktionstræning i fodbold og andre sportsgrene. Par op til 3 telefoner sammen." />
+    <meta property="og:title" content="ReactX – Reaction Training" />
+    <meta property="og:description" content="Full-screen color reactions for reaction training in football and other sports. Pair up to 3 phones together." />
     <meta property="og:url" content="https://react-x-rouge.vercel.app/" />
     <meta property="og:image" content="https://react-x-rouge.vercel.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ReactX – Reaktionstræning" />
-    <meta name="twitter:description" content="Fuldskærms farvereaktion til reaktionstræning i fodbold og andre sportsgrene. Par op til 3 telefoner sammen." />
+    <meta name="twitter:title" content="ReactX – Reaction Training" />
+    <meta name="twitter:description" content="Full-screen color reactions for reaction training in football and other sports. Pair up to 3 phones together." />
     <meta name="twitter:image" content="https://react-x-rouge.vercel.app/og-image.png" />
 
     <!-- iOS "Add to Home Screen" understøttelse -->
@@ -29,7 +32,7 @@
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon-180.png" />
 
     <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png" />
-    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="manifest" id="manifest-link" href="./manifest.en.webmanifest" />
   </head>
   <body>
     <div id="app"></div>

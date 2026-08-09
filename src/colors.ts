@@ -1,8 +1,9 @@
+import { t } from './i18n';
+
 export type ColorId = 'blue' | 'yellow' | 'red' | 'green' | 'orange' | 'purple' | 'white' | 'black';
 
 export interface ColorDef {
   id: ColorId;
-  label: string; // dansk navn, vises i colorblind-tilstand
   hex: string;
   /** tekstfarve der bruges oven på denne baggrund (til label/UI) */
   contrast: '#000000' | '#ffffff';
@@ -12,21 +13,26 @@ export interface ColorDef {
 // hinanden i det perifere syn og for farveblinde spillere (rød/grøn er det
 // klassiske problem, så de to er bevidst holdt langt fra hinanden i lysstyrke).
 export const CORE_COLORS: ColorDef[] = [
-  { id: 'blue', label: 'BLÅ', hex: '#1d4ed8', contrast: '#ffffff' },
-  { id: 'yellow', label: 'GUL', hex: '#eab308', contrast: '#000000' },
-  { id: 'red', label: 'RØD', hex: '#dc2626', contrast: '#ffffff' },
-  { id: 'green', label: 'GRØN', hex: '#16a34a', contrast: '#ffffff' },
+  { id: 'blue', hex: '#1d4ed8', contrast: '#ffffff' },
+  { id: 'yellow', hex: '#eab308', contrast: '#000000' },
+  { id: 'red', hex: '#dc2626', contrast: '#ffffff' },
+  { id: 'green', hex: '#16a34a', contrast: '#ffffff' },
 ];
 
 // Ekstra farver til øget sværhedsgrad / flere spillere.
 export const EXTRA_COLORS: ColorDef[] = [
-  { id: 'orange', label: 'ORANGE', hex: '#ea580c', contrast: '#ffffff' },
-  { id: 'purple', label: 'LILLA', hex: '#7e22ce', contrast: '#ffffff' },
-  { id: 'white', label: 'HVID', hex: '#f8fafc', contrast: '#000000' },
-  { id: 'black', label: 'SORT', hex: '#0a0a0a', contrast: '#ffffff' },
+  { id: 'orange', hex: '#ea580c', contrast: '#ffffff' },
+  { id: 'purple', hex: '#7e22ce', contrast: '#ffffff' },
+  { id: 'white', hex: '#f8fafc', contrast: '#000000' },
+  { id: 'black', hex: '#0a0a0a', contrast: '#ffffff' },
 ];
 
 export const ALL_COLORS: ColorDef[] = [...CORE_COLORS, ...EXTRA_COLORS];
+
+/** Oversat visningsnavn for en farve (bruges i colorblind-tilstand og indstillinger). */
+export function colorLabel(id: ColorId): string {
+  return t(`color.${id}`);
+}
 
 export function colorById(id: ColorId): ColorDef {
   const c = ALL_COLORS.find((c) => c.id === id);

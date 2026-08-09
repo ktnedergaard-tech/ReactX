@@ -1,5 +1,6 @@
-import { colorById, type ColorId } from './colors';
+import { colorById, colorLabel, type ColorId } from './colors';
 import { playBeep, vibrate } from './cues';
+import { t } from './i18n';
 
 export interface ColorScreenOptions {
   showRepCounter: boolean;
@@ -57,7 +58,7 @@ export class ColorScreenView {
 
     const cornerTap = document.createElement('button');
     cornerTap.className = 'corner-tap';
-    cornerTap.setAttribute('aria-label', 'Pause og stop');
+    cornerTap.setAttribute('aria-label', t('colorScreen.pauseAria'));
     cornerTap.innerHTML = '<span class="menu-dot">⋯</span>';
     cornerTap.addEventListener('click', () => this.toggleOverlay());
     this.root.appendChild(cornerTap);
@@ -70,7 +71,7 @@ export class ColorScreenView {
   private showHintOnce(): void {
     const hint = document.createElement('div');
     hint.className = 'corner-hint';
-    hint.textContent = 'Tryk her for pause/stop';
+    hint.textContent = t('colorScreen.pauseHint');
     this.root.appendChild(hint);
     window.setTimeout(() => hint.classList.add('corner-hint--fade'), 3500);
     window.setTimeout(() => hint.remove(), 4200);
@@ -84,7 +85,7 @@ export class ColorScreenView {
     const def = colorById(color);
     this.root.style.backgroundColor = def.hex;
     this.label.style.color = def.contrast;
-    this.label.textContent = this.opts.colorBlindLabels ? def.label : '';
+    this.label.textContent = this.opts.colorBlindLabels ? colorLabel(def.id) : '';
     this.numberLabel.style.color = def.contrast;
     this.numberLabel.textContent = displayNumber !== undefined ? String(displayNumber) : '';
     if (this.opts.showRepCounter && repIndex !== undefined) {
@@ -96,7 +97,7 @@ export class ColorScreenView {
 
   showCountdown(secondsLeft: number): void {
     this.label.style.color = '#ffffff';
-    this.label.textContent = secondsLeft > 0 ? String(secondsLeft) : 'KLAR!';
+    this.label.textContent = secondsLeft > 0 ? String(secondsLeft) : t('colorScreen.ready');
     this.numberLabel.textContent = '';
   }
 
@@ -112,16 +113,16 @@ export class ColorScreenView {
     if (this.opts.controllable) {
       const pauseBtn = document.createElement('button');
       pauseBtn.className = 'btn btn--primary';
-      pauseBtn.textContent = this.paused ? 'Fortsæt' : 'Pause';
+      pauseBtn.textContent = this.paused ? t('colorScreen.resume') : t('colorScreen.pause');
       pauseBtn.addEventListener('click', () => {
         this.paused = !this.paused;
-        pauseBtn.textContent = this.paused ? 'Fortsæt' : 'Pause';
+        pauseBtn.textContent = this.paused ? t('colorScreen.resume') : t('colorScreen.pause');
         this.opts.onTogglePause?.();
       });
       overlay.appendChild(pauseBtn);
     } else {
       const info = document.createElement('div');
-      info.textContent = 'Værten styrer denne øvelse';
+      info.textContent = t('colorScreen.hostControls');
       info.style.opacity = '0.7';
       info.style.fontSize = '0.9rem';
       overlay.appendChild(info);
@@ -129,13 +130,13 @@ export class ColorScreenView {
 
     const exitBtn = document.createElement('button');
     exitBtn.className = 'btn btn--danger';
-    exitBtn.textContent = '⏹ Stop træning';
+    exitBtn.textContent = t('colorScreen.stop');
     exitBtn.addEventListener('click', () => this.opts.onExit());
     overlay.appendChild(exitBtn);
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'btn btn--ghost';
-    closeBtn.textContent = 'Luk menu';
+    closeBtn.textContent = t('colorScreen.closeMenu');
     closeBtn.addEventListener('click', () => this.toggleOverlay());
     overlay.appendChild(closeBtn);
 

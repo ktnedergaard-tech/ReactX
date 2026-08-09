@@ -8,7 +8,7 @@ const base = (paths: string) =>
 
 export const icons = {
   tripod: base(
-    '<rect x="8" y="3" width="8" height="12" rx="2"/><path d="M12 15v3M12 18l-5 4M12 18l5 4M9 21h6"/>'
+    '<rect x="8.6" y="2" width="6.8" height="12" rx="1.7"/><path d="M10.6 3.7h2.8"/><circle cx="12" cy="12.3" r="0.6" fill="currentColor"/><path d="M12 14l-4.5 7M12 14v7M12 14l4.5 7"/>'
   ),
   eye: base('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>'),
   voice: base(
@@ -21,7 +21,7 @@ export const icons = {
   branch: base('<path d="M12 3v6M12 9l-6 6M12 9l6 6M6 15v6M18 15v6"/>'),
   trendUp: base('<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'),
   multiDevice: base(
-    '<rect x="1.5" y="10" width="5" height="8" rx="1.1"/><rect x="9.5" y="4" width="5" height="14" rx="1.1"/><rect x="17.5" y="10" width="5" height="8" rx="1.1"/>'
+    '<rect x="1.8" y="9" width="4.4" height="6.5" rx="1.1"/><path d="M4 15.5l-2 4.5M4 15.5v4.5M4 15.5l2 4.5"/><rect x="9.4" y="5" width="5.2" height="9" rx="1.3"/><path d="M12 14l-2.7 6M12 14v6M12 14l2.7 6"/><rect x="17.8" y="9" width="4.4" height="6.5" rx="1.1"/><path d="M20 15.5l-2 4.5M20 15.5v4.5M20 15.5l2 4.5"/>'
   ),
   chevron: base('<path d="M9 5l7 7-7 7"/>'),
 } as const;

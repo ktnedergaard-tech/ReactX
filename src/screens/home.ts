@@ -4,30 +4,29 @@ import { icons } from '../icons';
 export function renderHome(root: HTMLElement, nav: Nav): void {
   root.innerHTML = '';
   const screen = document.createElement('div');
-  screen.className = 'screen';
-  screen.style.alignItems = 'center';
-  screen.style.textAlign = 'center';
+  screen.className = 'screen home-screen';
 
-  screen.innerHTML = `
-    <img class="app-mark" src="./icons/icon-192.png" alt="" width="84" height="84" />
-    <h1 class="logo">React<span class="logo-x">X</span></h1>
-    <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
-    <p class="subtitle">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
-    <div class="badge-row">
-      <span class="badge">⚡ Virker offline</span>
-      <span class="badge">🎲 Tilfældig hver gang</span>
-      <span class="badge">🔗 Op til 3 telefoner</span>
-    </div>
-
-    <div class="hero-photo">
-      <img src="./hero-player.webp" alt="Spiller scanner en telefon på stativ på banen, inden bolden modtages" loading="lazy" width="670" height="1510" />
-      <div class="hero-photo-caption">Placér telefonen bag dig og scan, mens bolden er på vej</div>
+  // --- Hero: fuld-bredde foto med tekst ovenpå, som i designet ---
+  const hero = document.createElement('div');
+  hero.className = 'hero-banner';
+  hero.innerHTML = `
+    <img src="./hero-player.webp" alt="Spiller scanner en telefon på stativ på banen, inden bolden modtages" width="670" height="1510" />
+    <div class="hero-banner-content">
+      <div>
+        <h1 class="logo">React<span class="logo-x">X</span></h1>
+        <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
+        <p class="hero-desc">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
+      </div>
     </div>
   `;
+  screen.appendChild(hero);
 
+  const content = document.createElement('div');
+  content.className = 'home-content';
+
+  // --- Primære handlinger ---
   const stack = document.createElement('div');
   stack.className = 'stack';
-  stack.style.marginBottom = '36px';
 
   const soloBtn = document.createElement('button');
   soloBtn.className = 'btn btn--primary';
@@ -40,13 +39,12 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   pairBtn.addEventListener('click', () => nav.go('pair-home'));
 
   stack.append(soloBtn, pairBtn);
-  screen.appendChild(stack);
+  content.appendChild(stack);
 
   // --- Sådan virker det ---
   const stepsSection = document.createElement('div');
-  stepsSection.style.width = '100%';
-  stepsSection.style.maxWidth = '420px';
-  stepsSection.innerHTML = `<div class="section-label">Sådan virker det</div>`;
+  stepsSection.className = 'plain-section';
+  stepsSection.innerHTML = `<h2 class="plain-heading">Sådan virker det</h2>`;
   const steps = document.createElement('ol');
   steps.className = 'steps';
   steps.append(
@@ -57,47 +55,45 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
     stepEl(icons.voice, '3. Reagér', 'Råb farven højt, vend dig, og modtag bolden.')
   );
   stepsSection.appendChild(steps);
-  screen.appendChild(stepsSection);
+  content.appendChild(stepsSection);
 
   // --- Flere telefoner ---
   const multiSection = document.createElement('div');
-  multiSection.style.width = '100%';
-  multiSection.style.maxWidth = '420px';
+  multiSection.className = 'plain-section';
   multiSection.innerHTML = `
-    <div class="section-label">Par flere telefoner</div>
-    <p class="subtitle" style="margin:0 0 4px;max-width:none;">Par op til 2 ekstra telefoner, og placér dem på mål, rebounders eller kegler. Hver telefon viser sin egen farve, aldrig den samme som de andre.</p>
+    <h2 class="plain-heading">Par flere telefoner</h2>
+    <p class="plain-text">Par op til 2 ekstra telefoner, og placér dem på mål, rebounders eller kegler. Hver telefon viser sin egen farve, aldrig den samme som de andre.</p>
     <div class="example-row">
       <span class="swatch-dot" style="background:#1d4ed8"></span>
       <span class="swatch-dot" style="background:#eab308"></span>
       <span class="swatch-dot" style="background:#dc2626"></span>
-      <span class="subtitle" style="margin:0;font-size:0.78rem;">3 telefoner, 3 forskellige farver – samtidig</span>
+      <span class="plain-text example-caption">3 telefoner, 3 forskellige farver – samtidig</span>
     </div>
   `;
-  screen.appendChild(multiSection);
+  content.appendChild(multiSection);
 
   // --- Fordele ---
   const benefitsSection = document.createElement('div');
-  benefitsSection.style.width = '100%';
-  benefitsSection.style.maxWidth = '420px';
-  benefitsSection.style.marginBottom = '8px';
-  benefitsSection.innerHTML = `<div class="section-label">Hvorfor reaktionstræning</div>`;
-  const grid = document.createElement('div');
-  grid.className = 'benefits-grid';
-  grid.append(
-    benefitEl(icons.target, 'Bedre scanning', 'Træn evnen til hurtigt at opfatte information omkring dig.'),
-    benefitEl(icons.brain, 'Hurtigere reaktion', 'Reager hurtigere på visuelle stimuli og spilsituationer.'),
-    benefitEl(icons.branch, 'Bedre beslutninger', 'Tag hurtigere og skarpere beslutninger på banen.'),
-    benefitEl(icons.trendUp, 'Bedre præstation', 'Skærp hovedet, og løft dit niveau.')
+  benefitsSection.className = 'plain-section';
+  benefitsSection.innerHTML = `<h2 class="plain-heading">Hvorfor reaktionstræning</h2>`;
+  const benefitsRow = document.createElement('div');
+  benefitsRow.className = 'benefits-row';
+  benefitsRow.append(
+    benefitEl(icons.target, 'Bedre scanning', 'Opfat information omkring dig hurtigere.'),
+    benefitEl(icons.brain, 'Hurtigere reaktion', 'Reager hurtigere på visuelle stimuli.'),
+    benefitEl(icons.branch, 'Bedre beslutninger', 'Tag hurtigere og skarpere valg på banen.'),
+    benefitEl(icons.trendUp, 'Bedre præstation', 'Skærp hovedet, løft dit niveau.')
   );
-  benefitsSection.appendChild(grid);
-  screen.appendChild(benefitsSection);
+  benefitsSection.appendChild(benefitsRow);
+  content.appendChild(benefitsSection);
 
   const ideasBtn = document.createElement('button');
   ideasBtn.className = 'link';
   ideasBtn.textContent = 'Idéer til øvelser og forbedringer →';
   ideasBtn.addEventListener('click', () => nav.go('ideas'));
-  screen.appendChild(ideasBtn);
+  content.appendChild(ideasBtn);
 
+  screen.appendChild(content);
   root.appendChild(screen);
 }
 

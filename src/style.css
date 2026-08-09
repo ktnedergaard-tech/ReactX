@@ -269,6 +269,11 @@ h1.logo .logo-x {
 }
 .hero-cta-btn--pair .hero-cta-icon {
   color: var(--accent);
+  /* 3 kopier af solo-ikonet side om side (viewBox 72×24, samme forhold
+     3:1) – bredden skal skaleres tilsvarende, så hver af de 3 telefoner
+     ender nøjagtig samme størrelse som det ene solo-ikon, i stedet for
+     at blive klemt sammen i en kvadratisk boks. */
+  width: 78px;
 }
 .hero-cta-icon {
   flex: none;

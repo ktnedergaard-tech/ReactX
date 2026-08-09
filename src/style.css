@@ -347,6 +347,43 @@ h1.logo .logo-x {
   font-size: 0.88rem;
 }
 
+.multi-photo {
+  position: relative;
+  width: 100%;
+  margin-top: 18px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 900 / 488;
+  background: var(--bg);
+}
+.multi-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.multi-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Mørkner bunden af fotoet, så farve-eksemplet ovenpå altid er
+     let at læse, uanset hvor lyst græsset er lige der. */
+  background: linear-gradient(180deg, transparent 45%, rgba(5, 7, 12, 0.9) 100%);
+  pointer-events: none;
+}
+.example-row--overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 14px 16px 16px;
+}
+.example-row--overlay .example-caption {
+  color: var(--text);
+}
+
 .benefits-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

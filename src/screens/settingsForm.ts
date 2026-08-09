@@ -15,6 +15,7 @@ export function buildSettingsForm(
   card.className = 'card';
 
   // --- Interval ---
+  card.appendChild(sectionLabel('Tempo'));
   const minField = field(
     'Hurtigst skift',
     `${(settings.minIntervalMs / 1000).toFixed(1)} sek`,
@@ -44,6 +45,7 @@ export function buildSettingsForm(
   card.append(minField.wrap, maxField.wrap);
 
   // --- Farvepalette ---
+  card.appendChild(sectionLabel('Farver'));
   const paletteLabel = document.createElement('div');
   paletteLabel.className = 'field';
   paletteLabel.innerHTML = `<label><span>Farver i spil</span></label>`;
@@ -88,8 +90,8 @@ export function buildSettingsForm(
   card.appendChild(paletteLabel);
 
   // --- Toggles ---
+  card.appendChild(sectionLabel('Ekstra'));
   const toggles = document.createElement('div');
-  toggles.style.marginTop = '6px';
   toggles.appendChild(
     switchRow('Undgå samme farve to gange i træk', settings.avoidImmediateRepeat, (v) => {
       settings.avoidImmediateRepeat = v;
@@ -129,6 +131,7 @@ export function buildSettingsForm(
   card.appendChild(toggles);
 
   // --- Nedtælling ---
+  card.appendChild(sectionLabel('Opstart'));
   const countdownField = field(
     'Nedtælling før start',
     `${settings.countdownSeconds} sek`,
@@ -141,6 +144,13 @@ export function buildSettingsForm(
   card.appendChild(countdownField.wrap);
 
   container.appendChild(card);
+}
+
+function sectionLabel(text: string): HTMLElement {
+  const el = document.createElement('div');
+  el.className = 'section-label';
+  el.textContent = text;
+  return el;
 }
 
 function rangeInput(min: number, max: number, step: number, value: number, onInput: (v: number) => void): HTMLInputElement {

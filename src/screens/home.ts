@@ -8,6 +8,11 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
     <img class="app-mark" src="./icons/icon-192.png" alt="" width="84" height="84" />
     <h1 class="logo">ReactX</h1>
     <p class="subtitle">Fuldskærms farvereaktion til reaktionstræning. Placér telefonen(erne) så du kan scanne dem, mens bolden er på vej tilbage — råb farverne højt, inden du modtager.</p>
+    <div class="badge-row">
+      <span class="badge">⚡ Virker offline</span>
+      <span class="badge">🎲 Tilfældig hver gang</span>
+      <span class="badge">🔗 Op til 3 telefoner</span>
+    </div>
   `;
 
   const stack = document.createElement('div');

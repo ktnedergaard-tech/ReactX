@@ -83,6 +83,20 @@ body {
   border-radius: 22px;
   margin-bottom: 18px;
   box-shadow: var(--shadow-md), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: mark-breathe 3.2s ease-in-out infinite;
+}
+@keyframes mark-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    transform: scale(1.035);
+    box-shadow: var(--shadow-md), 0 0 26px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-mark { animation: none; }
 }
 
 h1.logo {
@@ -95,10 +109,53 @@ h1.logo {
 
 .subtitle {
   color: var(--text-dim);
-  margin: 0 0 28px;
+  margin: 0 0 18px;
   font-size: 0.95rem;
   max-width: 32ch;
   line-height: 1.5;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 340px;
+  margin: 0 0 28px;
+}
+.badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text-dim);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 24px 0 14px;
+}
+.section-label:first-child {
+  margin-top: 0;
+}
+.section-label::before {
+  content: '';
+  flex: none;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
 }
 
 .stack {

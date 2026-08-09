@@ -93,6 +93,10 @@ h1.logo .logo-x {
   background-clip: text;
   color: transparent;
 }
+h1.logo.logo--sm {
+  font-size: 1.5rem;
+  margin: 0;
+}
 
 .tagline {
   margin: 0 0 16px;
@@ -144,7 +148,7 @@ h1.logo .logo-x {
      beskæres væk – stativet/telefonen OG spilleren skal begge være med. */
   aspect-ratio: 900 / 470;
   overflow: hidden;
-  background: var(--bg-elevated);
+  background: var(--bg);
 }
 .hero-banner img {
   width: 100%;
@@ -156,16 +160,30 @@ h1.logo .logo-x {
   content: '';
   position: absolute;
   inset: 0;
-  /* Blød overgang ned mod den mørke baggrund, rent kosmetisk – teksten
-     ligger ikke ovenpå fotoet mere, så det er ikke et læsbarheds-krav. */
-  background: linear-gradient(180deg, transparent 78%, rgba(5, 7, 12, 0.9) 100%);
+  /* Lang, blød overgang der ender i PRÆCIS samme farve som baggrunden
+     lige under, så der ikke er noget synligt skel mellem foto og tekst –
+     det hele skal opleves som én sammenhængende blok. */
+  background: linear-gradient(180deg, transparent 40%, var(--bg) 100%);
+}
+
+.hero-brand {
+  position: absolute;
+  top: calc(var(--safe-t) + 14px);
+  left: calc(var(--safe-l) + 18px);
+  z-index: 1;
+  background: rgba(5, 7, 12, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .hero-text {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: 26px calc(var(--safe-r) + 20px) 0 calc(var(--safe-l) + 20px);
+  padding: 6px calc(var(--safe-r) + 20px) 0 calc(var(--safe-l) + 20px);
   text-align: left;
 }
 
@@ -177,7 +195,7 @@ h1.logo .logo-x {
 }
 
 .home-content {
-  padding: 40px calc(var(--safe-r) + 20px) calc(var(--safe-b) + 20px) calc(var(--safe-l) + 20px);
+  padding: 22px calc(var(--safe-r) + 20px) calc(var(--safe-b) + 20px) calc(var(--safe-l) + 20px);
   display: flex;
   flex-direction: column;
   align-items: center;

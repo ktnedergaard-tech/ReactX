@@ -1,4 +1,5 @@
 import { ALL_COLORS, CORE_COLORS, EXTRA_COLORS, type ColorId } from '../colors';
+import { icons } from '../icons';
 import type { DrillSettings } from '../storage';
 
 /**
@@ -89,9 +90,17 @@ export function buildSettingsForm(
   paletteLabel.appendChild(hint);
   card.appendChild(paletteLabel);
 
-  // --- Toggles ---
-  card.appendChild(sectionLabel('Ekstra'));
+  // --- Toggles (fold-ud, så de mange ekstra-indstillinger ikke fylder
+  // hele skærmen som standard) ---
+  const extraDetails = document.createElement('details');
+  extraDetails.className = 'section-collapse';
+  const extraSummary = document.createElement('summary');
+  extraSummary.className = 'section-label section-label--toggle';
+  extraSummary.innerHTML = `<span>Ekstra</span><span class="section-collapse-chevron">${icons.chevron}</span>`;
+  extraDetails.appendChild(extraSummary);
+
   const toggles = document.createElement('div');
+  toggles.className = 'section-collapse-body';
   toggles.appendChild(
     switchRow('Undgå samme farve to gange i træk', settings.avoidImmediateRepeat, (v) => {
       settings.avoidImmediateRepeat = v;
@@ -128,7 +137,8 @@ export function buildSettingsForm(
       onChange(settings);
     })
   );
-  card.appendChild(toggles);
+  extraDetails.appendChild(toggles);
+  card.appendChild(extraDetails);
 
   // --- Nedtælling ---
   card.appendChild(sectionLabel('Opstart'));

@@ -131,6 +131,51 @@ h1.logo .logo-x {
   background: linear-gradient(180deg, var(--accent-2), var(--accent));
 }
 
+/* -------- Fold-ud sektion (fx "Ekstra" i indstillinger) -------- */
+.section-collapse {
+  margin: 24px 0 0;
+}
+.section-collapse:first-child {
+  margin-top: 0;
+}
+.section-label--toggle {
+  width: 100%;
+  margin: 0;
+  padding: 6px 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  justify-content: flex-start;
+}
+.section-label--toggle::-webkit-details-marker {
+  display: none;
+}
+.section-label--toggle span:first-of-type {
+  flex: 1;
+}
+.section-collapse-chevron {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--text-dim);
+  transition: transform 0.18s ease;
+}
+.section-collapse-chevron svg {
+  width: 100%;
+  height: 100%;
+}
+.section-collapse[open] .section-collapse-chevron {
+  transform: rotate(90deg);
+}
+.section-collapse-body {
+  padding-top: 14px;
+  animation: collapse-in 0.16s ease both;
+}
+@keyframes collapse-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
 /* -------- Forside: fuld-bredde hero-foto (uden beskæring) + tekst under -------- */
 .home-screen {
   padding-left: 0;

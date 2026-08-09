@@ -7,10 +7,11 @@ const base = (paths: string, viewBox = '0 0 24 24') =>
   `<svg viewBox="${viewBox}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
 
 /** Samme telefon-på-stativ-tegning som `tripod`, men forskudt `dx` enheder
- * til højre – bruges til at gentage ikonet flere gange i samme SVG uden at
- * skalere det (så hver kopi altid er nøjagtig samme størrelse som originalen). */
-const tripodAt = (dx: number) =>
-  `<rect x="${8.6 + dx}" y="2" width="6.8" height="12" rx="1.7"/><path d="M${10.6 + dx} 3.7h2.8"/><circle cx="${12 + dx}" cy="12.3" r="0.6" fill="currentColor"/><path d="M${12 + dx} 14l-4.5 7M${12 + dx} 14v7M${12 + dx} 14l4.5 7"/>`;
+ * til højre og `dy` enheder ned – bruges til at gentage ikonet flere gange
+ * i samme SVG uden at skalere det (så hver kopi altid er nøjagtig samme
+ * størrelse som originalen), og til at give kopierne forskellig højde. */
+const tripodAt = (dx: number, dy = 0) =>
+  `<rect x="${8.6 + dx}" y="${2 + dy}" width="6.8" height="12" rx="1.7"/><path d="M${10.6 + dx} ${3.7 + dy}h2.8"/><circle cx="${12 + dx}" cy="${12.3 + dy}" r="0.6" fill="currentColor"/><path d="M${12 + dx} ${14 + dy}l-4.5 7M${12 + dx} ${14 + dy}v7M${12 + dx} ${14 + dy}l4.5 7"/>`;
 
 export const icons = {
   tripod: base(tripodAt(0)),
@@ -24,9 +25,11 @@ export const icons = {
   ),
   branch: base('<path d="M12 3v6M12 9l-6 6M12 9l6 6M6 15v6M18 15v6"/>'),
   trendUp: base('<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'),
-  // Nøjagtig samme telefon-på-stativ-ikon som `tripod`, bare gentaget 3
-  // gange side om side – hver kopi i samme skala som solo-ikonet.
-  multiDevice: base(tripodAt(0) + tripodAt(24) + tripodAt(48), '0 0 72 24'),
+  // Nøjagtig samme telefon-på-stativ-ikon som `tripod`, i samme skala,
+  // gentaget 3 gange – men ikke på linje: den midterste står højere
+  // (kortere ned-forskydning), de to yderste lavere, ligesom stative i
+  // forskellig højde.
+  multiDevice: base(tripodAt(0, 4) + tripodAt(24, 0) + tripodAt(48, 4), '0 0 72 26'),
   chevron: base('<path d="M9 5l7 7-7 7"/>'),
 } as const;
 

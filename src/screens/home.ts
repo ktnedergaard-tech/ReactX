@@ -6,45 +6,52 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   const screen = document.createElement('div');
   screen.className = 'screen home-screen';
 
-  // --- Hero: fuld-bredde foto, uden beskæring, så hele konceptet ses.
-  // Tekstblokken trækkes op så den overlapper bunden af fotoet (som
-  // allerede er mørkere dernede pga. gradienten) – det binder foto og
-  // tekst sammen som én blok, uden at dække stativ/telefon/spiller. ---
-  const hero = document.createElement('div');
-  hero.className = 'hero-banner';
-  hero.innerHTML = `
-    <img src="./hero-player.webp" alt="Telefon på stativ viser farven lilla, mens en spiller scanner området og bolden er på vej" width="900" height="470" />
-  `;
-  screen.appendChild(hero);
-
-  const heroText = document.createElement('div');
-  heroText.className = 'hero-text hero-text--overlap';
-  heroText.innerHTML = `
+  // --- Top: logo/tagline/beskrivelse på ren mørk baggrund (matcher
+  // designforslaget), efterfulgt af foto-bånd (stativ/telefon/spiller)
+  // og til sidst de to store handlings-knapper, der overlapper bunden
+  // af fotoet let – ligesom i det forslag brugeren har lavet. ---
+  const heroTop = document.createElement('div');
+  heroTop.className = 'hero-top';
+  heroTop.innerHTML = `
     <h1 class="logo">React<span class="logo-x">X</span></h1>
     <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
     <p class="hero-desc">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
   `;
-  screen.appendChild(heroText);
+  screen.appendChild(heroTop);
 
-  const content = document.createElement('div');
-  content.className = 'home-content';
+  const hero = document.createElement('div');
+  hero.className = 'hero-banner';
+  hero.innerHTML = `
+    <img src="./hero-player.webp" alt="Telefon på stativ viser farven lilla, mens en spiller scanner området og bolden er på vej" width="900" height="624" />
+  `;
+  screen.appendChild(hero);
 
-  // --- Primære handlinger ---
-  const stack = document.createElement('div');
-  stack.className = 'stack';
+  const heroCta = document.createElement('div');
+  heroCta.className = 'hero-cta';
 
   const soloBtn = document.createElement('button');
-  soloBtn.className = 'btn btn--primary';
-  soloBtn.textContent = '📱 Solo – én telefon';
+  soloBtn.className = 'hero-cta-btn hero-cta-btn--solo';
+  soloBtn.innerHTML = `
+    <span class="hero-cta-icon">${icons.tripod}</span>
+    <span class="hero-cta-label">Solo – én telefon</span>
+    <span class="hero-cta-chevron">${icons.chevron}</span>
+  `;
   soloBtn.addEventListener('click', () => nav.go('solo-settings'));
 
   const pairBtn = document.createElement('button');
-  pairBtn.className = 'btn';
-  pairBtn.textContent = '🔗 Par sammen – 2-3 telefoner';
+  pairBtn.className = 'hero-cta-btn hero-cta-btn--pair';
+  pairBtn.innerHTML = `
+    <span class="hero-cta-icon">${icons.multiDevice}</span>
+    <span class="hero-cta-label">Par sammen – 2-3 telefoner</span>
+    <span class="hero-cta-chevron">${icons.chevron}</span>
+  `;
   pairBtn.addEventListener('click', () => nav.go('pair-home'));
 
-  stack.append(soloBtn, pairBtn);
-  content.appendChild(stack);
+  heroCta.append(soloBtn, pairBtn);
+  screen.appendChild(heroCta);
+
+  const content = document.createElement('div');
+  content.className = 'home-content';
 
   // --- Sådan virker det ---
   const stepsSection = document.createElement('div');

@@ -139,12 +139,29 @@ h1.logo .logo-x {
   align-items: stretch;
 }
 
+.hero-top {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(var(--safe-t) + 26px) calc(var(--safe-r) + 20px) 22px calc(var(--safe-l) + 20px);
+  text-align: left;
+}
+
+.hero-desc {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
 .hero-banner {
   position: relative;
   width: 100%;
-  /* Matcher fotoets egne proportioner, så hele billedet ses uden at noget
-     beskæres væk – stativet/telefonen OG spilleren skal begge være med. */
-  aspect-ratio: 900 / 470;
+  /* Matcher det beskårne foto-bånd (stativ/telefon/spiller), uden tekst
+     eller knapper bagt ind – det klarer vores egne HTML-elementer. */
+  aspect-ratio: 900 / 624;
   overflow: hidden;
   background: var(--bg);
 }
@@ -158,35 +175,77 @@ h1.logo .logo-x {
   content: '';
   position: absolute;
   inset: 0;
-  /* Mørkner bunden af fotoet kraftigt, så ordmærket kan overlappe det og
-     stadig være fuldt læseligt – ender i PRÆCIS samme farve som
-     baggrunden lige under, så der ikke er noget synligt skel. */
-  background: linear-gradient(180deg, transparent 25%, rgba(5, 7, 12, 0.75) 68%, var(--bg) 100%);
+  /* Let vignet forneden, så knapperne ovenpå altid er skarpe uanset
+     hvor lyst græsset er lige der, hvor de overlapper. */
+  background: linear-gradient(180deg, transparent 78%, rgba(5, 7, 12, 0.55) 100%);
 }
 
-.hero-text {
+.hero-cta {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 6px calc(var(--safe-r) + 20px) 0 calc(var(--safe-l) + 20px);
+  max-width: 480px;
+  margin: -34px auto 0;
+  padding: 0 calc(var(--safe-r) + 20px) 0 calc(var(--safe-l) + 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.hero-cta-btn {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 17px 20px;
+  border-radius: 20px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   text-align: left;
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.08s ease, box-shadow 0.15s ease;
 }
-.hero-text--overlap {
-  /* Trækker tekstblokken op over bunden af fotoet, så logo (og på brede
-     skærme tagline) fysisk overlapper billedet i stedet for at ligge
-     rent under det – det er den del af fotoet gradienten ovenfor gør
-     mørk nok til at teksten altid er skarp. */
-  margin-top: -78px;
-  padding-top: 0;
+.hero-cta-btn:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-sm);
 }
-
-.hero-desc {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: 1rem;
-  line-height: 1.55;
+.hero-cta-btn--solo {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #04231c;
+  border: none;
+  box-shadow: 0 10px 26px rgba(var(--accent-rgb), 0.35);
+}
+.hero-cta-btn--pair {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.hero-cta-btn--pair .hero-cta-icon {
+  color: var(--accent);
+}
+.hero-cta-icon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+}
+.hero-cta-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.hero-cta-label {
+  flex: 1;
+}
+.hero-cta-chevron {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  opacity: 0.75;
+}
+.hero-cta-chevron svg {
+  width: 100%;
+  height: 100%;
 }
 
 .home-content {

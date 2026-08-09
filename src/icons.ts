@@ -20,6 +20,10 @@ export const icons = {
   ),
   branch: base('<path d="M12 3v6M12 9l-6 6M12 9l6 6M6 15v6M18 15v6"/>'),
   trendUp: base('<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'),
+  multiDevice: base(
+    '<rect x="1.5" y="10" width="5" height="8" rx="1.1"/><rect x="9.5" y="4" width="5" height="14" rx="1.1"/><rect x="17.5" y="10" width="5" height="8" rx="1.1"/>'
+  ),
+  chevron: base('<path d="M9 5l7 7-7 7"/>'),
 } as const;
 
 export type IconName = keyof typeof icons;

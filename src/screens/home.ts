@@ -6,20 +6,22 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   const screen = document.createElement('div');
   screen.className = 'screen home-screen';
 
-  // --- Hero: fuld-bredde foto med tekst ovenpå, som i designet ---
+  // --- Hero: fuld-bredde foto, uden beskæring, så hele konceptet ses ---
   const hero = document.createElement('div');
   hero.className = 'hero-banner';
   hero.innerHTML = `
-    <img src="./hero-player.webp" alt="Spiller scanner en telefon på stativ på banen, inden bolden modtages" width="670" height="1510" />
-    <div class="hero-banner-content">
-      <div>
-        <h1 class="logo">React<span class="logo-x">X</span></h1>
-        <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
-        <p class="hero-desc">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
-      </div>
-    </div>
+    <img src="./hero-player.webp" alt="Telefon på stativ viser farven lilla, mens en spiller scanner området og bolden er på vej" width="900" height="470" />
   `;
   screen.appendChild(hero);
+
+  const heroText = document.createElement('div');
+  heroText.className = 'hero-text';
+  heroText.innerHTML = `
+    <h1 class="logo">React<span class="logo-x">X</span></h1>
+    <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
+    <p class="hero-desc">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
+  `;
+  screen.appendChild(heroText);
 
   const content = document.createElement('div');
   content.className = 'home-content';

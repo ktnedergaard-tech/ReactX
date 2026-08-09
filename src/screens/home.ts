@@ -79,9 +79,9 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
       <img src="./multi-device.webp" alt="Spiller foran tre rebounders med hver sin farve – blå, gul og rød – og pile der viser bevægelsen mellem dem" width="900" height="488" />
       <div class="example-row example-row--overlay">
         <span class="swatch-dot" style="background:#1d4ed8"></span>
-        <span class="swatch-dot" style="background:#eab308"></span>
         <span class="swatch-dot" style="background:#dc2626"></span>
-        <span class="plain-text example-caption">3 telefoner, 3 forskellige farver – samtidig</span>
+        <span class="swatch-dot" style="background:#dc2626"></span>
+        <span class="plain-text example-caption">3 telefoner i spil – samtidig</span>
       </div>
     </div>
   `;

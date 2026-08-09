@@ -7,23 +7,20 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
   screen.className = 'screen home-screen';
 
   // --- Hero: fuld-bredde foto, uden beskæring, så hele konceptet ses.
-  // Kun selve mærket ligger som en lille "badge" ovenpå fotoet (med sin
-  // egen mørke baggrund, så den altid er læselig) – resten af teksten
-  // flyder sømløst videre lige under, uden noget synligt skel, så det
-  // hele opleves som én sammenhængende blok. ---
+  // Tekstblokken trækkes op så den overlapper bunden af fotoet (som
+  // allerede er mørkere dernede pga. gradienten) – det binder foto og
+  // tekst sammen som én blok, uden at dække stativ/telefon/spiller. ---
   const hero = document.createElement('div');
   hero.className = 'hero-banner';
   hero.innerHTML = `
     <img src="./hero-player.webp" alt="Telefon på stativ viser farven lilla, mens en spiller scanner området og bolden er på vej" width="900" height="470" />
-    <div class="hero-brand">
-      <h1 class="logo logo--sm">React<span class="logo-x">X</span></h1>
-    </div>
   `;
   screen.appendChild(hero);
 
   const heroText = document.createElement('div');
-  heroText.className = 'hero-text';
+  heroText.className = 'hero-text hero-text--overlap';
   heroText.innerHTML = `
+    <h1 class="logo">React<span class="logo-x">X</span></h1>
     <p class="tagline">TRÆN<span class="dot">.</span> REAGÉR<span class="dot">.</span> FORBEDR<span class="dot">.</span></p>
     <p class="hero-desc">Forbedr din reaktionsevne, beslutningstagning og evne til at scanne omgivelserne.</p>
   `;

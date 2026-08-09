@@ -8,8 +8,9 @@
   --border-soft: #1b2130;
   --text: #f6f7fb;
   --text-dim: #99a2b8;
-  --accent: #3b82f6;
-  --accent-2: #60a5fa;
+  --accent: #16d9ac;
+  --accent-2: #6ffce0;
+  --accent-rgb: 22, 217, 172;
   --danger: #dc2626;
   --ok: #16a34a;
   --radius: 18px;
@@ -36,9 +37,10 @@ html, body {
 body {
   margin: 0;
   background:
-    radial-gradient(60vw 40vh at 50% -10%, rgba(59, 130, 246, 0.14), transparent 60%),
+    radial-gradient(60vw 40vh at 50% -10%, rgba(var(--accent-rgb), 0.14), transparent 60%),
     var(--bg);
   color: var(--text);
+  accent-color: var(--accent);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-user-select: none;
@@ -92,7 +94,7 @@ body {
   }
   50% {
     transform: scale(1.035);
-    box-shadow: var(--shadow-md), 0 0 26px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-md), 0 0 26px rgba(var(--accent-rgb), 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -102,9 +104,27 @@ body {
 h1.logo {
   font-size: 2.6rem;
   font-weight: 800;
-  margin: 0 0 4px;
+  margin: 0 0 8px;
   letter-spacing: -0.02em;
   color: var(--text);
+}
+h1.logo .logo-x {
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tagline {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.tagline .dot {
+  color: var(--accent);
 }
 
 .subtitle {
@@ -158,6 +178,140 @@ h1.logo {
   background: linear-gradient(180deg, var(--accent-2), var(--accent));
 }
 
+/* -------- Forsidens hero-foto, trin og fordele -------- */
+.hero-photo {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 300px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: 4px 0 28px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-soft);
+}
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.hero-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(5, 7, 12, 0.9));
+  pointer-events: none;
+}
+.hero-photo .hero-photo-caption {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.steps {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  width: 100%;
+  max-width: 420px;
+}
+.step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.step-icon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.step-icon svg {
+  width: 19px;
+  height: 19px;
+}
+.step-connector {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  margin: 2px 0 2px 20px;
+}
+.step-body {
+  padding-top: 2px;
+}
+.step-body h3 {
+  margin: 0 0 2px;
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.step-body p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.example-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 16px;
+}
+.example-row .swatch-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: 0 0 0 3px var(--bg-elevated), 0 0 0 4px var(--border);
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+}
+.benefit {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: left;
+}
+.benefit .step-icon {
+  margin-bottom: 10px;
+}
+.benefit h4 {
+  margin: 0 0 4px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.benefit p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
 .stack {
   display: flex;
   flex-direction: column;
@@ -195,9 +349,11 @@ button {
 }
 .btn--primary {
   background: linear-gradient(180deg, var(--accent-2), var(--accent));
-  color: white;
+  /* Lys mint-baggrund kræver mørk tekst for læsbarhed, i modsætning til de
+     mørkere knapper der bruger hvid. */
+  color: #04231c;
   border-color: transparent;
-  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.35);
 }
 .btn--danger {
   background: var(--danger);
